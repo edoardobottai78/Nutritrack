@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NutriTrack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#070709;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'DM Sans',sans-serif;-webkit-font-smoothing:antialiased}
+#phone-wrapper{transform-origin:center center;transition:transform .2s}
+.scroll-area{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scroll-area::-webkit-scrollbar{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0;transform:scale(0.82)}to{opacity:1;transform:scale(1)}}
+@keyframes slideL{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideR{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:translateX(0)}}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.5}}
+.afu{animation:fadeUp .36s cubic-bezier(.22,1,.36,1) both}
+.acu{animation:countUp .42s cubic-bezier(.22,1,.36,1) both}
+.asl{animation:slideL .3s cubic-bezier(.22,1,.36,1) both}
+.asr{animation:slideR .3s cubic-bezier(.22,1,.36,1) both}
+.diag{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(-45deg,transparent,transparent 6px,rgba(255,255,255,.018) 6px,rgba(255,255,255,.018) 7px)}
+textarea::placeholder{color:rgba(255,255,255,.28)}
+textarea,input{color:#fff;font-family:'DM Sans',sans-serif}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+// ── TOKENS ───────────────────────────────────────────────────────
+const LIME   = '#C8F53A';
+const ORANGE = '#FF7C2A';
+const DANGER = '#FF4444';
+const BLUE   = '#4A9EFF';
+const BG     = '#0A0A0B';
+const CARD   = '#111114';
+const CARD2  = '#17171B';
+const BORDER = 'rgba(255,255,255,0.07)';
+const MUTED  = 'rgba(255,255,255,0.38)';
+const MUTED2 = 'rgba(255,255,255,0.58)';
+
+// ── MEAL DATA ────────────────────────────────────────────────────
+// Shared protein options (pranzo + cena base)
+const PROT_BASE = [
+  { id:'A', desc:'100g bresaola / arrosto tacchino / arrosto pollo', kcal:120, p:22, c:0,  g:3  },
+  { id:'B', desc:'150g carne bianca',                                 kcal:160, p:32, c:0,  g:4  },
+  { id:'C', desc:'120g carne rossa',                                  kcal:200, p:26, c:0,  g:11 },
+  { id:'D', desc:'200g pesce bianco',                                 kcal:140, p:36, c:0,  g:2  },
+  { id:'E', desc:'2 uova + 100ml albume',                             kcal:130, p:24, c:1,  g:7  },
+  { id:'F', desc:'150g salmone / pesce spada / tonno [MAX 1×/sett]',  kcal:180, p:28, c:0,  g:8, maxPerWeek:1 },
+  { id:'G', desc:'150g formaggi freschi (fiocchi latte)',             kcal:170, p:18, c:4,  g:8  },
+  { id:'H', desc:'150g legumi cotti o 50g secco',                     kcal:110, p:8,  c:18, g:1  },
+];
+const PROT_CENA = [...PROT_BASE,
+  { id:'I', desc:'90g tempeh', kcal:120, p:12, c:6, g:6 },
+];
+const SPUNTINO_BASE = [
+  { id:'A', desc:'150g frutta stagione + 20g cioccolato fondente',                  kcal:180, p:3,  c:28, g:7 },
+  { id:'B', desc:'150g yogurt bianco magro + 20g grana + 150g frutta stagione',     kcal:220, p:18, c:24, g:6 },
+  { id:'C', desc:'20g grana + 150g frutta stagione',                                kcal:130, p:8,  c:20, g:4 },
+  { id:'D', desc:'1 pacchetto crackers + 20g grana oppure 20g frutta secca',        kcal:160, p:7,  c:18, g:6 },
+];
+const SPUNTINO_EXTRA = [
+  { id:'A', desc:'3 gallette grano saraceno + marmellata senza zuccheri',           kcal:160, p:3,  c:32, g:1 },
+  { id:'B', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino', kcal:180, p:14, c:30, g:2 },
+  { id:'C', desc:'150g frutta + 20g grana',                                         kcal:130, p:8,  c:20, g:4 },
+];
+
+const MEAL_PLANS = {
+  Standard: {
+    colazione: [
+      { id:'A', desc:'Toast — 70g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',                                              kcal:420, p:32, c:42, g:12 },
+      { id:'B', desc:'Toast+ — 70g pane integrale + 150ml albume strapazzato + spremitura arancia',                                                       kcal:380, p:36, c:40, g:6  },
+      { id:'C', desc:'Pancake — 150g yogurt greco + 50g farina avena + 100g frutta + 10g frutta secca + 150ml albume + 150g frutta/marmellata topping',   kcal:490, p:38, c:58, g:10 },
+      { id:'D', desc:'Solo caffè / thè senza zucchero',                                                                                                   kcal:0,   p:0,  c:0,  g:0  },
+    ],
+    spuntinoMattina: SPUNTINO_BASE,
+    pranzoCarbo: [
+      { id:'A', desc:'160g pasta integrale',  kcal:330, p:12, c:62, g:2 },
+      { id:'B', desc:'150g pasta bianca',     kcal:310, p:11, c:60, g:1 },
+      { id:'C', desc:'200g riso basmati',     kcal:280, p:6,  c:62, g:1 },
+      { id:'D', desc:'160g pane grano duro',  kcal:350, p:12, c:66, g:3 },
+      { id:'E', desc:'210g pane integrale',   kcal:340, p:13, c:62, g:4 },
+    ],
+    pranzoProt: PROT_BASE,
+    spuntinoPomeriggio: SPUNTINO_BASE,
+    spuntinoExtra: SPUNTINO_EXTRA,
+    cenaCarbo: [
+      { id:'A', desc:'140g pasta bianca',                              kcal:295, p:10, c:57, g:1 },
+      { id:'B', desc:'150g pasta integrale',                           kcal:310, p:11, c:58, g:2 },
+      { id:'C', desc:'150g riso basmati / cous cous / farro / orzo',   kcal:260, p:6,  c:56, g:1 },
+      { id:'D', desc:'160g pane grano duro',                           kcal:330, p:12, c:62, g:3 },
+      { id:'E', desc:'200g patate al forno o lesse',                   kcal:140, p:4,  c:32, g:0 },
+      { id:'F', desc:'180g pane integrale',                            kcal:340, p:13, c:62, g:4 },
+    ],
+    cenaProt: PROT_CENA,
+  },
+  Riposo: {
+    colazione: [
+      { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',                                              kcal:380, p:30, c:38, g:12 },
+      { id:'B', desc:'Toast+ — 60g pane integrale + 150ml albume strapazzato + spremitura arancia',                                                       kcal:340, p:34, c:36, g:6  },
+      { id:'C', desc:'Pancake — 150g yogurt greco + 50g farina avena + 50g fiocchi avena + 100g frutta + 10g frutta secca + 150ml albume',                kcal:520, p:40, c:66, g:12 },
+      { id:'D', desc:'Solo caffè / thè senza zucchero',                                                                                                   kcal:0,   p:0,  c:0,  g:0  },
+    ],
+    spuntinoMattina: SPUNTINO_BASE,
+    pranzoCarbo: [
+      { id:'A', desc:'130g pasta bianca',                              kcal:275, p:10, c:52, g:1 },
+      { id:'B', desc:'140g pasta integrale',                           kcal:290, p:11, c:54, g:2 },
+      { id:'C', desc:'140g riso basmati / cous cous / farro / orzo',   kcal:240, p:4,  c:43, g:1 },
+      { id:'D', desc:'190g pane grano duro',                           kcal:415, p:14, c:78, g:4 },
+      { id:'E', desc:'180g pane integrale',                            kcal:310, p:11, c:53, g:3 },
+    ],
+    pranzoProt: PROT_BASE,
+    spuntinoPomeriggio: [
+      ...SPUNTINO_BASE,
+      { id:'E', desc:'3 gallette grano saraceno + marmellata senza zuccheri',           kcal:160, p:3,  c:32, g:1 },
+      { id:'F', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino', kcal:180, p:14, c:30, g:2 },
+    ],
+    spuntinoExtra: SPUNTINO_EXTRA,
+    cenaCarbo: [
+      { id:'A', desc:'120g pasta bianca',                                          kcal:250, p:9,  c:49, g:1 },
+      { id:'B', desc:'150g pasta integrale',                                       kcal:310, p:11, c:58, g:2 },
+      { id:'C', desc:'120g riso basmati / cous cous / farro / orzo',               kcal:200, p:5,  c:45, g:1 },
+      { id:'D', desc:'160g pane grano duro',                                       kcal:350, p:12, c:67, g:3 },
+      { id:'E', desc:'200g patate al forno/lesse o 100g pasta bianca',             kcal:140, p:4,  c:32, g:0 },
+      { id:'F', desc:'310g gnocchi di patate',                                     kcal:360, p:8,  c:72, g:3 },
+      { id:'G', desc:'480g patate al forno/lesse (peso crudo)',                    kcal:280, p:7,  c:63, g:1 },
+    ],
+    cenaProt: PROT_CENA,
+  },
+};
+
+// ── LOCALSTORAGE — per-day keys ───────────────────────────────────
+// Schema key: "nutritrack_YYYY-MM-DD"
+// Selections: { opzione:"A", kcal:420, p:32, c:42, g:12 } | null
+
+const dateKey   = (d = new Date()) => `nutritrack_${d.toISOString().split('T')[0]}`;
+const todayKey  = () => dateKey();
+const todayDate = () => new Date().toISOString().split('T')[0];
+
+const readDay = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
+const writeDay = (key, data) => { try { localStorage.setItem(key, JSON.stringify(data)); } catch {} };
+
+const emptyTotali = () => ({ kcal:0, proteine:0, carbo:0, grassi:0 });
+
+const calcTotali = selezioni => {
+  let kcal=0, proteine=0, carbo=0, grassi=0;
+  const MEAL_KEYS = ['colazione','spuntinoMattina','pranzoCarbo','pranzoProt','spuntinoPomeriggio','spuntinoExtra','cenaCarbo','cenaProt'];
+  for (const k of MEAL_KEYS) {
+    const s = selezioni?.[k];
+    if (s) { kcal+=s.kcal||0; proteine+=s.p||0; carbo+=s.c||0; grassi+=s.g||0; }
+  }
+  const pl = selezioni?.pastoLibero;
+  if (pl) { kcal+=pl.kcal||0; proteine+=pl.p||0; carbo+=pl.c||0; grassi+=pl.g||0; }
+  return { kcal, proteine, carbo, grassi };
+};
+
+const mkDefaultState = () => ({
+  piano: 'Standard',
+  selezioni: { colazione:null, spuntinoMattina:null, pranzoCarbo:null, pranzoProt:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaCarbo:null, cenaProt:null, pastoLibero:null },
+  energia: { bmr:1850, attivo:420 },
+  totali: emptyTotali(),
+  delta: -2270,
+  warningProteine: true,
+  doppiAllenamento: false,
+  timestamp: new Date().toISOString(),
+});
+
+const loadToday = () => readDay(todayKey()) || mkDefaultState();
+
+const persistState = s => {
+  writeDay(todayKey(), s);
+};
+
+// Compute delta given state
+const computeDelta = (totali, energia) => {
+  const bmr    = Number(energia?.bmr)    || 0;
+  const attivo = Number(energia?.attivo) || 0;
+  return totali.kcal - (bmr + attivo);
+};
+
+// Rebuild full state snapshot (called any time selezioni or energia changes)
+const rebuildState = s => {
+  const totali = calcTotali(s.selezioni);
+  const delta  = computeDelta(totali, s.energia);
+  return { ...s, totali, delta, warningProteine: totali.proteine < 130, timestamp: new Date().toISOString() };
+};
+
+// ── ROLLING WEEK HELPERS ──────────────────────────────────────────
+const getLast7 = () => Array.from({ length:7 }, (_, i) => {
+  const d = new Date(); d.setDate(d.getDate() - (6 - i));
+  const k = dateKey(d);
+  return { date: d.toISOString().split('T')[0], data: readDay(k), isToday: i === 6 };
+});
+
+// Count salmon selections (option F in pranzoProt or cenaProt) across last 7 days
+const countSalmonWeek = days7 => days7.reduce((n, d) => {
+  if (!d.data?.selezioni) return n;
+  const a = d.data.selezioni.pranzoProt?.opzione === 'F' ? 1 : 0;
+  const b = d.data.selezioni.cenaProt?.opzione   === 'F' ? 1 : 0;
+  return n + a + b;
+}, 0);
+
+// Count days this week where pastoLibero was filled (excluding today)
+const countPastoLiberoWeek = days7 => days7
+  .filter(d => !d.isToday && d.data?.selezioni?.pastoLibero != null)
+  .length;
+
+// ── DATE DISPLAY ──────────────────────────────────────────────────
+const MONTHS_IT  = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const DAYS_IT    = ['Dom','Lun','Mar','Mer','Gio','Ven','Sab'];
+const DAYS_SHORT = ['D','L','M','M','G','V','S'];
+
+const fmtDate   = d => `${DAYS_IT[d.getDay()]} ${d.getDate()} ${MONTHS_IT[d.getMonth()]}`;
+const shortDay  = dateStr => { const d = new Date(dateStr+'T12:00:00'); return DAYS_SHORT[d.getDay()]; };
+const avgArr    = arr => arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : null;
+
+// ── SHARED COMPONENTS ─────────────────────────────────────────────
+const BB = ({ children, style, ...p }) => (
+  <span style={{ fontFamily:"'Barlow Condensed',sans-serif", ...style }} {...p}>{children}</span>
+);
+
+const StatCard = ({ label, value, unit, color, delay=0 }) => (
+  <div className="afu" style={{ animationDelay:`${delay}ms`, background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'10px 12px' }}>
+    <div style={{ fontSize:9, color:MUTED, textTransform:'uppercase', letterSpacing:'0.06em', marginBottom:3 }}>{label}</div>
+    <BB style={{ fontSize:25, fontWeight:800, color:color||'#fff', lineHeight:1 }}>{value ?? '—'}</BB>
+    {unit && <span style={{ fontSize:10, color:MUTED, marginLeft:2 }}>{unit}</span>}
+  </div>
+);
+
+const MacroBar = ({ label, grams, maxGrams, color, delay=0 }) => (
+  <div className="afu" style={{ animationDelay:`${delay}ms`, marginBottom:12 }}>
+    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:5 }}>
+      <span style={{ fontSize:12, color:MUTED2 }}>{label}</span>
+      <BB style={{ fontSize:13, fontWeight:700 }}>{grams}<span style={{ fontSize:10, color:MUTED, marginLeft:2 }}>g</span></BB>
+    </div>
+    <div style={{ height:7, background:'rgba(255,255,255,0.08)', borderRadius:99, overflow:'hidden' }}>
+      <div style={{ height:'100%', width:`${Math.min((grams/maxGrams)*100,100)}%`, background:color, borderRadius:99, transition:'width .7s cubic-bezier(.22,1,.36,1)' }} />
+    </div>
+  </div>
+);
+
+const Toggle = ({ value, onChange }) => (
+  <div onClick={onChange} style={{ width:42, height:24, borderRadius:12, background: value ? LIME : 'rgba(255,255,255,0.1)', cursor:'pointer', position:'relative', transition:'background .2s', flexShrink:0 }}>
+    <div style={{ position:'absolute', top:3, left: value ? 21 : 3, width:18, height:18, borderRadius:9, background: value ? '#000' : '#fff', transition:'left .2s', boxShadow:'0 1px 3px rgba(0,0,0,0.3)' }} />
+  </div>
+);
+
+// ── RADIO OPTION ─────────────────────────────────────────────────
+// selezioni[selKey] is { opzione, kcal, p, c, g } | null
+const RadioOption = ({ optId, selKey, label, kcal, macros, selezioni, onSelect }) => {
+  const active = selezioni[selKey]?.opzione === optId;
+  return (
+    <div onClick={() => onSelect(selKey, optId)}
+      style={{ display:'flex', alignItems:'flex-start', padding:'7px 0 7px 0', cursor:'pointer',
+        borderLeft:`2px solid ${active ? LIME : 'transparent'}`,
+        background: active ? 'rgba(200,245,58,0.05)' : 'transparent',
+        marginLeft:-14, paddingLeft:12, paddingRight:10, borderRadius:'0 8px 8px 0', transition:'all .15s' }}>
+      <div style={{ width:15, height:15, borderRadius:'50%', border:`2px solid ${active ? LIME : 'rgba(255,255,255,0.2)'}`, background: active ? LIME : 'transparent', flexShrink:0, marginTop:2, marginRight:9, display:'flex', alignItems:'center', justifyContent:'center', transition:'all .15s' }}>
+        {active && <div style={{ width:5, height:5, borderRadius:'50%', background:'#000' }} />}
+      </div>
+      <div style={{ flex:1, minWidth:0 }}>
+        <span style={{ fontSize:12.5, color: active ? '#fff' : MUTED2, lineHeight:1.4, display:'block' }}>{label}</span>
+        {active && macros && (
+          <div style={{ display:'flex', gap:10, marginTop:2 }}>
+            {[['P',macros.p],['C',macros.c],['G',macros.g]].map(([l,v]) => (
+              <BB key={l} style={{ fontSize:10, fontWeight:700, color:MUTED }}>{l}:{v}g</BB>
+            ))}
+          </div>
+        )}
+      </div>
+      {kcal > 0 && <BB style={{ fontSize:11, fontWeight:700, color: active ? LIME : MUTED2, flexShrink:0, marginLeft:8, whiteSpace:'nowrap' }}>{kcal}</BB>}
+    </div>
+  );
+};
+
+// ── COLLAPSIBLE MEAL SECTION (single) ────────────────────────────
+const MealSection = ({ title, selKey, options, selezioni, onSelect }) => {
+  const [open, setOpen] = useState(false);
+  const sel = selezioni[selKey];
+  return (
+    <div style={{ background:CARD, border:`1px solid ${sel ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, overflow:'hidden', transition:'border-color .2s' }}>
+      <div onClick={() => setOpen(!open)} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 14px', cursor:'pointer', userSelect:'none' }}>
+        <BB style={{ fontSize:14, fontWeight:800, color:'#fff', letterSpacing:'0.01em', whiteSpace:'nowrap' }}>{title}</BB>
+        <div style={{ display:'flex', alignItems:'center', gap:8, marginLeft:8 }}>
+          <BB style={{ fontSize:11, fontWeight:700, color: sel ? LIME : MUTED, whiteSpace:'nowrap' }}>{sel ? `${sel.kcal} kcal` : '— kcal'}</BB>
+          <span style={{ color:MUTED, fontSize:13, display:'inline-block', transform:`rotate(${open?90:0}deg)`, transition:'transform .2s', lineHeight:1 }}>›</span>
+        </div>
+      </div>
+      {open && (
+        <div style={{ borderTop:`1px solid ${BORDER}`, padding:'6px 14px 10px' }}>
+          {options.map(opt => (
+            <RadioOption key={opt.id} optId={opt.id} selKey={selKey} label={opt.desc} kcal={opt.kcal} macros={{p:opt.p,c:opt.c,g:opt.g}} selezioni={selezioni} onSelect={onSelect} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── COLLAPSIBLE MEAL SECTION (double: carbo + prot) ───────────────
+const MealSectionDouble = ({ title, subsections, selezioni, onSelect }) => {
+  const [open, setOpen] = useState(false);
+  const totalKcal = subsections.reduce((sum, sub) => sum + (selezioni[sub.selKey]?.kcal || 0), 0);
+  return (
+    <div style={{ background:CARD, border:`1px solid ${totalKcal > 0 ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, overflow:'hidden', transition:'border-color .2s' }}>
+      <div onClick={() => setOpen(!open)} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 14px', cursor:'pointer', userSelect:'none' }}>
+        <BB style={{ fontSize:14, fontWeight:800, color:'#fff', letterSpacing:'0.01em' }}>{title}</BB>
+        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+          <BB style={{ fontSize:11, fontWeight:700, color: totalKcal > 0 ? LIME : MUTED, whiteSpace:'nowrap' }}>{totalKcal > 0 ? `${totalKcal} kcal` : '— kcal'}</BB>
+          <span style={{ color:MUTED, fontSize:13, display:'inline-block', transform:`rotate(${open?90:0}deg)`, transition:'transform .2s', lineHeight:1 }}>›</span>
+        </div>
+      </div>
+      {open && (
+        <div style={{ borderTop:`1px solid ${BORDER}` }}>
+          {subsections.map((sub, si) => (
+            <div key={sub.selKey} style={{ padding:'8px 14px 10px', borderBottom: si < subsections.length-1 ? `1px solid ${BORDER}` : 'none' }}>
+              <div style={{ fontSize:10, color:MUTED, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:6 }}>{sub.label}</div>
+              {sub.options.map(opt => (
+                <RadioOption key={opt.id} optId={opt.id} selKey={sub.selKey} label={opt.desc} kcal={opt.kcal} macros={{p:opt.p,c:opt.c,g:opt.g}} selezioni={selezioni} onSelect={onSelect} />
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── SCREEN 1: PIANO ───────────────────────────────────────────────
+function ScreenPiano({ state, setState, days7 }) {
+  const [aiLoading, setAiLoading] = useState(false);
+  const [plTesto, setPlTesto] = useState(state.selezioni.pastoLibero?.desc || '');
+  const plan = MEAL_PLANS[state.piano] || MEAL_PLANS.Standard;
+
+  // Count how many other days this week already used pasto libero
+  const plUsedOtherDays = countPastoLiberoWeek(days7);
+
+  // Build a selection object from a plan option and commit it
+  const onSelect = (sectionKey, optId) => {
+    setState(prev => {
+      const opts = (MEAL_PLANS[prev.piano] || MEAL_PLANS.Standard)[sectionKey] || [];
+      const opt  = opts.find(o => o.id === optId);
+      if (!opt) return prev;
+      const isToggleOff = prev.selezioni[sectionKey]?.opzione === optId;
+      const newSel      = isToggleOff ? null : { opzione: optId, kcal: opt.kcal, p: opt.p, c: opt.c, g: opt.g };
+      const next        = rebuildState({ ...prev, selezioni: { ...prev.selezioni, [sectionKey]: newSel } });
+      persistState(next);
+      return next;
+    });
+  };
+
+  const handleAI = async () => {
+    if (!plTesto.trim() || aiLoading) return;
+    setAiLoading(true);
+    try {
+      const res  = await fetch('/api/ai', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ description: plTesto }) });
+      const data = res.ok ? await res.json() : { kcal:420, proteine:22, carboidrati:45, grassi:14 };
+      const plSel = { desc: plTesto, kcal: data.kcal||0, p: data.proteine||0, c: data.carboidrati||0, g: data.grassi||0 };
+      setState(prev => {
+        const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } });
+        persistState(next);
+        return next;
+      });
+    } catch {
+      const plSel = { desc: plTesto, kcal:420, p:22, c:45, g:14 };
+      setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } }); persistState(next); return next; });
+    }
+    setAiLoading(false);
+  };
+
+  const setPiano = id => setState(prev => {
+    // Clear all selections when switching plan (avoids stale kcal values)
+    const next = rebuildState({ ...prev, piano: id, selezioni: mkDefaultState().selezioni });
+    persistState(next);
+    return next;
+  });
+
+  const setDoppi = () => setState(prev => {
+    const next = rebuildState({ ...prev, doppiAllenamento: !prev.doppiAllenamento,
+      selezioni: { ...prev.selezioni, spuntinoExtra: null } });
+    persistState(next);
+    return next;
+  });
+
+  const { kcal, proteine, carbo, grassi } = state.totali;
+  const plans = [
+    { id:'Bulk',     label:'Piano 1', sub:'Bulk',     locked:true  },
+    { id:'Standard', label:'Piano 2', sub:'Standard', locked:false },
+    { id:'Riposo',   label:'Piano 3', sub:'Riposo',   locked:false },
+  ];
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      {/* Header */}
+      <div style={{ padding:'14px 20px 10px', flexShrink:0 }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:13 }}>
+          <BB style={{ fontSize:26, fontWeight:900, letterSpacing:'-0.01em' }}>
+            <span style={{ color:'#fff' }}>NUTRI</span><span style={{ color:LIME }}>TRACK</span>
+          </BB>
+          <div style={{ background:CARD2, border:`1px solid ${BORDER}`, borderRadius:20, padding:'5px 12px', fontSize:12, color:MUTED2 }}>
+            {fmtDate(new Date())}
+          </div>
+        </div>
+        {/* Plan selector */}
+        <div style={{ display:'flex', gap:7 }}>
+          {plans.map(pl => {
+            const act = state.piano === pl.id;
+            return (
+              <button key={pl.id} onClick={() => !pl.locked && setPiano(pl.id)}
+                style={{ flex:1, border:`1px solid ${act ? LIME : BORDER}`, background: act ? 'rgba(200,245,58,0.1)' : CARD, borderRadius:99, padding:'7px 4px', cursor: pl.locked ? 'not-allowed' : 'pointer', opacity: pl.locked ? 0.4 : 1, transition:'all .2s', textAlign:'center' }}>
+                <div style={{ fontSize:10, color: act ? LIME : MUTED, fontWeight:500, lineHeight:1.2 }}>{pl.label}</div>
+                <BB style={{ fontSize:12, fontWeight:700, color: act ? LIME : MUTED2 }}>{pl.sub}{pl.locked ? ' 🔒' : ''}</BB>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Meals */}
+      <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
+        <MealSection title="Colazione"         selKey="colazione"         options={plan.colazione}         selezioni={state.selezioni} onSelect={onSelect} />
+        <MealSection title="Spuntino mattina"  selKey="spuntinoMattina"   options={plan.spuntinoMattina}   selezioni={state.selezioni} onSelect={onSelect} />
+        <MealSectionDouble title="Pranzo" subsections={[
+          { label:'Carboidrati', selKey:'pranzoCarbo',  options:plan.pranzoCarbo  },
+          { label:'Proteine',    selKey:'pranzoProt',   options:plan.pranzoProt   },
+        ]} selezioni={state.selezioni} onSelect={onSelect} />
+        <MealSection title="Spuntino pomeriggio" selKey="spuntinoPomeriggio" options={plan.spuntinoPomeriggio} selezioni={state.selezioni} onSelect={onSelect} />
+
+        {/* Monday double training toggle */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:8, padding:'11px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <span style={{ fontSize:13, color:MUTED2 }}>Lunedì — doppio allenamento</span>
+          <Toggle value={state.doppiAllenamento} onChange={setDoppi} />
+        </div>
+        {state.doppiAllenamento && (
+          <MealSection title="Spuntino extra" selKey="spuntinoExtra" options={plan.spuntinoExtra} selezioni={state.selezioni} onSelect={onSelect} />
+        )}
+
+        <MealSectionDouble title="Cena" subsections={[
+          { label:'Carboidrati', selKey:'cenaCarbo', options:plan.cenaCarbo },
+          { label:'Proteine',    selKey:'cenaProt',  options:plan.cenaProt  },
+        ]} selezioni={state.selezioni} onSelect={onSelect} />
+
+        {/* Pasto libero */}
+        <div style={{ background:CARD, border:`1px solid ${state.selezioni.pastoLibero ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, padding:14, transition:'border-color .2s' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+            <BB style={{ fontSize:14, fontWeight:800, color:'#fff' }}>Pasto libero</BB>
+            {state.selezioni.pastoLibero
+              ? <BB style={{ fontSize:11, fontWeight:700, color:LIME }}>{state.selezioni.pastoLibero.kcal} kcal</BB>
+              : <span style={{ fontSize:11, color:MUTED }}>libera scelta</span>}
+          </div>
+
+          {/* Business rule: warn if already used another day this week */}
+          {plUsedOtherDays > 0 && !state.selezioni.pastoLibero && (
+            <div style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.28)`, borderRadius:8, padding:'8px 12px', marginBottom:8, display:'flex', alignItems:'center', gap:8 }}>
+              <span style={{ fontSize:13 }}>⚠️</span>
+              <span style={{ fontSize:11, color:'#FFB070' }}>Pasto libero già usato questa settimana ({plUsedOtherDays}×/7gg)</span>
+            </div>
+          )}
+
+          <textarea value={plTesto} onChange={e => setPlTesto(e.target.value)}
+            placeholder="Descrivi il tuo pasto…"
+            style={{ width:'100%', background:'rgba(255,255,255,0.04)', border:`1px solid ${BORDER}`, borderRadius:8, fontSize:13, padding:'10px 12px', resize:'none', outline:'none', height:62, lineHeight:1.4 }} />
+
+          <button onClick={handleAI} disabled={aiLoading || !plTesto.trim()}
+            style={{ marginTop:8, width:'100%', background: plTesto.trim() ? LIME : 'rgba(200,245,58,0.18)', border:'none', borderRadius:8, padding:'9px', cursor: plTesto.trim() && !aiLoading ? 'pointer' : 'default', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', transition:'all .2s' }}>
+            {aiLoading ? <span style={{ animation:'pls 1s infinite' }}>Analisi in corso…</span> : 'Stima con AI →'}
+          </button>
+
+          {state.selezioni.pastoLibero && (
+            <div style={{ marginTop:8, background:'rgba(200,245,58,0.07)', border:`1px solid rgba(200,245,58,0.18)`, borderRadius:8, padding:'10px 12px', display:'flex', gap:16, flexWrap:'wrap' }}>
+              {[['Kcal',state.selezioni.pastoLibero.kcal,''],['Prot',state.selezioni.pastoLibero.p,'g'],['Carb',state.selezioni.pastoLibero.c,'g'],['Grassi',state.selezioni.pastoLibero.g,'g']].map(([l,v,u]) => (
+                <div key={l}>
+                  <div style={{ fontSize:9, color:MUTED }}>{l}</div>
+                  <BB style={{ fontSize:19, fontWeight:800, color:LIME }}>{v}<span style={{ fontSize:10, color:MUTED }}>{u}</span></BB>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div style={{ height:8 }} />
+      </div>
+
+      {/* Sticky footer */}
+      <div style={{ background:'rgba(10,10,11,0.96)', borderTop:`1px solid ${BORDER}`, padding:'10px 20px 6px', flexShrink:0, backdropFilter:'blur(12px)' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+          <div>
+            <div style={{ fontSize:11, color:MUTED, marginBottom:2 }}>Totale giornaliero</div>
+            <div style={{ display:'flex', gap:10 }}>
+              <BB style={{ fontSize:11, fontWeight:700, color:BLUE }}>{`P:${proteine}g`}</BB>
+              <BB style={{ fontSize:11, fontWeight:700, color:ORANGE }}>{`C:${carbo}g`}</BB>
+              <BB style={{ fontSize:11, fontWeight:700, color:MUTED }}>{`G:${grassi}g`}</BB>
+            </div>
+          </div>
+          <div style={{ display:'flex', alignItems:'baseline', gap:4 }}>
+            <BB style={{ fontSize:34, fontWeight:900, color:LIME }}>{kcal.toLocaleString('it-IT')}</BB>
+            <span style={{ fontSize:12, color:MUTED }}>kcal</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── SCREEN 2: DELTA CALORIE ──────────────────────────────────────
+function ScreenDelta({ state, setState }) {
+  const [animKey, setAnimKey] = useState(0);
+  const { totali, energia, delta, warningProteine } = state;
+  const { kcal, proteine, carbo, grassi } = totali;
+  const bmr     = Number(energia?.bmr)    || 0;
+  const attivo  = Number(energia?.attivo) || 0;
+  const consumate = bmr + attivo;
+  const isDef   = delta < 0;
+
+  const adj = (field, amt) => setState(prev => {
+    const v    = Math.max(0, (Number(prev.energia[field])||0) + amt);
+    const next = rebuildState({ ...prev, energia: { ...prev.energia, [field]: v } });
+    persistState(next);
+    setAnimKey(k=>k+1);
+    return next;
+  });
+
+  const InputRow = ({ label, field, color }) => (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px' }}>
+      <span style={{ fontSize:12.5, color:MUTED2, flex:1, lineHeight:1.3, paddingRight:8 }}>{label}</span>
+      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+        <button onClick={() => adj(field,-10)} style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>−</button>
+        <BB style={{ fontSize:20, fontWeight:800, color:color||'#fff', minWidth:46, textAlign:'center' }}>{Number(state.energia[field])||0}</BB>
+        <button onClick={() => adj(field,+10)} style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>+</button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ padding:'14px 20px 6px', flexShrink:0 }}>
+        <BB style={{ fontSize:24, fontWeight:900, letterSpacing:'0.02em' }}>
+          <span style={{ color:MUTED }}>DELTA </span><span style={{ color:'#fff' }}>CALORIE</span>
+        </BB>
+      </div>
+      <div className="scroll-area" style={{ flex:1, padding:'8px 16px' }}>
+        {/* Hero delta */}
+        <div style={{ position:'relative', overflow:'hidden', background: isDef ? 'linear-gradient(135deg,#150808,#111114)' : 'linear-gradient(135deg,#0b1403,#111114)', border:`1px solid ${isDef ? 'rgba(255,68,68,0.22)' : 'rgba(200,245,58,0.22)'}`, borderRadius:16, padding:'24px 20px 20px', marginBottom:12, textAlign:'center' }}>
+          <div className="diag" />
+          <div style={{ position:'absolute', top:-40, left:'50%', transform:'translateX(-50%)', width:200, height:200, borderRadius:'50%', background: isDef ? 'rgba(255,68,68,0.1)' : 'rgba(200,245,58,0.08)', filter:'blur(48px)', pointerEvents:'none' }} />
+          <div key={animKey} className="acu" style={{ position:'relative' }}>
+            <BB style={{ fontSize:76, fontWeight:900, lineHeight:1, color: isDef ? DANGER : LIME, display:'block', letterSpacing:'-0.02em' }}>
+              {delta > 0 ? '+' : ''}{delta}
+            </BB>
+            <div style={{ fontSize:12, color:MUTED, marginTop:2 }}>kcal</div>
+          </div>
+          <div style={{ display:'inline-block', marginTop:12, background: isDef ? 'rgba(255,68,68,0.15)' : 'rgba(200,245,58,0.15)', border:`1px solid ${isDef ? 'rgba(255,68,68,0.35)' : 'rgba(200,245,58,0.35)'}`, borderRadius:99, padding:'4px 16px', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color: isDef ? DANGER : LIME, letterSpacing:'0.05em' }}>
+            {isDef ? 'DEFICIT' : delta > 0 ? 'SURPLUS' : 'BILANCIATO'}
+          </div>
+        </div>
+
+        {/* Input controls */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:12, overflow:'hidden' }}>
+          <InputRow label="Metabolismo basale (BMR)" field="bmr" />
+          <div style={{ borderTop:`1px solid ${BORDER}` }} />
+          <InputRow label="Attività fisica" field="attivo" color={ORANGE} />
+          <div style={{ borderTop:`1px solid ${BORDER}` }} />
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 16px' }}>
+            <span style={{ fontSize:12.5, color:MUTED2 }}>Kcal introdotte (dal piano)</span>
+            <BB style={{ fontSize:20, fontWeight:800, color:LIME }}>{kcal}</BB>
+          </div>
+        </div>
+
+        {/* Stat 3×2 grid */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, marginBottom:12 }}>
+          <StatCard label="Introdotte"  value={kcal}      unit="kcal" color={LIME}   delay={0}   />
+          <StatCard label="Consumate"   value={consumate} unit="kcal" color={ORANGE} delay={50}  />
+          <StatCard label="BMR"         value={bmr}       unit="kcal"                delay={100} />
+          <StatCard label="Proteine"    value={proteine}  unit="g"    color={warningProteine ? ORANGE : LIME} delay={150} />
+          <StatCard label="Carboidrati" value={carbo}     unit="g"    color={BLUE}   delay={200} />
+          <StatCard label="Grassi"      value={grassi}    unit="g"    color={ORANGE} delay={250} />
+        </div>
+
+        {/* Macro bars */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'14px 16px 4px', marginBottom:12 }}>
+          <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:12 }}>MACRONUTRIENTI</BB>
+          <MacroBar label="Proteine"    grams={proteine} maxGrams={160} color={LIME}   delay={0}   />
+          <MacroBar label="Carboidrati" grams={carbo}    maxGrams={250} color={BLUE}   delay={60}  />
+          <MacroBar label="Grassi"      grams={grassi}   maxGrams={90}  color={ORANGE} delay={120} />
+        </div>
+
+        {/* Warning proteine */}
+        {warningProteine && (
+          <div className="afu" style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.3)`, borderRadius:12, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'flex-start', gap:10 }}>
+            <span style={{ fontSize:16, flexShrink:0 }}>⚠️</span>
+            <span style={{ fontSize:12, color:'#FFB070', lineHeight:1.5 }}>Proteine sotto soglia (130g) — considera di aumentare la fonte proteica nel piano</span>
+          </div>
+        )}
+        <div style={{ height:8 }} />
+      </div>
+    </div>
+  );
+}
+
+// ── SCREEN 3: DASHBOARD ──────────────────────────────────────────
+function ScreenDashboard({ days7 }) {
+  const today = new Date();
+
+  // Streak: consecutive days with ≥1 selection ending today
+  let streak = 0;
+  for (let i = days7.length - 1; i >= 0; i--) {
+    const d = days7[i];
+    if (d.data && Object.keys(d.data.selezioni || {}).some(k => d.data.selezioni[k] != null)) streak++;
+    else if (i < days7.length - 1) break;
+  }
+
+  // Per-day chart + averages
+  let inTarget = 0;
+  const weekData = days7.map(d => {
+    if (!d.data) return { day: shortDay(d.date), delta: null, kcal: 0, proteine: 0, piano: null, isToday: d.isToday };
+    const t = d.data.totali || emptyTotali();
+    const delta = d.data.delta ?? null;
+    if (t.proteine >= 130) inTarget++;
+    return { day: shortDay(d.date), delta: d.data.energia?.bmr ? delta : null, kcal: t.kcal, proteine: t.proteine, piano: d.data.piano, isToday: d.isToday };
+  });
+
+  const validDeltas = weekData.filter(d => d.delta !== null);
+  const maxAbs      = validDeltas.length ? Math.max(...validDeltas.map(d => Math.abs(d.delta)), 1) : 500;
+  const BAR_H       = 80;
+
+  const validKcals = weekData.filter(d => d.kcal > 0).map(d => d.kcal);
+  const validProt  = weekData.filter(d => d.proteine > 0).map(d => d.proteine);
+  const avgDelta   = validDeltas.length ? avgArr(validDeltas.map(d => d.delta)) : null;
+
+  const prevalentPiano = (() => {
+    const counts = {};
+    weekData.filter(d => d.piano).forEach(d => { counts[d.piano] = (counts[d.piano]||0)+1; });
+    const best = Object.entries(counts).sort((a,b) => b[1]-a[1])[0];
+    return best ? (best[0]==='Standard' ? 'P2' : best[0]==='Riposo' ? 'P3' : 'P1') : '—';
+  })();
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ padding:'14px 20px 6px', flexShrink:0 }}>
+        <BB style={{ fontSize:24, fontWeight:900, color:'#fff', letterSpacing:'0.02em' }}>DASHBOARD</BB>
+      </div>
+      <div className="scroll-area" style={{ flex:1, padding:'10px 16px' }}>
+        {/* Streak card */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <span style={{ fontSize:22 }}>🔥</span>
+            <div>
+              <BB style={{ fontSize:18, fontWeight:900, color:LIME }}>{streak} giorn{streak===1?'o':'i'} consecutivi</BB>
+              <div style={{ fontSize:10, color:MUTED }}>Streak attiva</div>
+            </div>
+          </div>
+          <div style={{ background:'rgba(200,245,58,0.12)', border:`1px solid rgba(200,245,58,0.25)`, borderRadius:99, padding:'4px 10px', fontFamily:"'Barlow Condensed'", fontSize:12, fontWeight:700, color:LIME, flexShrink:0 }}>{inTarget}/7 target</div>
+        </div>
+
+        {/* 7-day bidirectional bar chart */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'14px', marginBottom:12 }}>
+          <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:14 }}>DELTA SETTIMANALE</BB>
+          <div style={{ position:'relative' }}>
+            <div style={{ position:'absolute', top:BAR_H, left:0, right:0, height:1, background:'rgba(255,255,255,0.15)' }} />
+            <div style={{ display:'flex', gap:4, height: BAR_H*2 + 26 }}>
+              {weekData.map((d,i) => {
+                const isPos = d.delta !== null && d.delta >= 0;
+                const h     = d.delta !== null ? Math.max(Math.round((Math.abs(d.delta)/maxAbs)*BAR_H), 2) : 0;
+                const col   = isPos ? LIME : DANGER;
+                const noData = d.delta === null;
+                return (
+                  <div key={i} style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', height:'100%' }}>
+                    <div style={{ height:BAR_H, display:'flex', alignItems:'flex-end', width:'100%', justifyContent:'center' }}>
+                      {isPos && !noData && <div style={{ width:'80%', maxWidth:22, height:h, background: d.isToday ? 'transparent' : col, border: d.isToday ? `2px solid ${col}` : 'none', borderRadius:'3px 3px 0 0' }} />}
+                    </div>
+                    <div style={{ height:26, display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:0 }}>
+                      <span style={{ fontSize:9, color: d.isToday ? LIME : MUTED, fontWeight: d.isToday ? 600 : 400 }}>{d.day}</span>
+                      {d.delta !== null && <BB style={{ fontSize:8, fontWeight:700, color: isPos ? LIME : DANGER }}>{d.delta>0?'+':''}{d.delta}</BB>}
+                    </div>
+                    <div style={{ height:BAR_H, display:'flex', alignItems:'flex-start', width:'100%', justifyContent:'center' }}>
+                      {!isPos && !noData && <div style={{ width:'80%', maxWidth:22, height:h, background: d.isToday ? 'transparent' : col, border: d.isToday ? `2px solid ${col}` : 'none', borderRadius:'0 0 3px 3px' }} />}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly/weekly averages */}
+        <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:10 }}>
+          {MONTHS_IT[today.getMonth()].toUpperCase()} {today.getFullYear()} — MEDIE 7GG
+        </BB>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, marginBottom:12 }}>
+          <StatCard label="Kcal medie"       value={validKcals.length ? avgArr(validKcals)?.toLocaleString('it-IT') : null}                                  delay={0}   />
+          <StatCard label="Delta medio"      value={avgDelta !== null ? (avgDelta>0?'+':'')+avgDelta : null} color={avgDelta !== null && avgDelta < 0 ? DANGER : LIME} delay={50}  />
+          <StatCard label="Proteine medie"   value={validProt.length ? avgArr(validProt) : null}  unit={validProt.length?'g':''} color={LIME}                  delay={100} />
+          <StatCard label="Piano prevalente" value={prevalentPiano}  color={BLUE}                                                                              delay={150} />
+        </div>
+        <div style={{ height:8 }} />
+      </div>
+    </div>
+  );
+}
+
+// ── SCREEN 4: FREQUENZA ──────────────────────────────────────────
+function ScreenFrequenza({ state, days7 }) {
+  const [notionModal, setNotionModal] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  // Rolling 7-day protein frequency
+  const protCounts = {};
+  days7.forEach(d => {
+    if (!d.data?.selezioni) return;
+    ['pranzoProt','cenaProt'].forEach(k => {
+      const sel = d.data.selezioni[k]?.opzione;
+      if (sel) protCounts[sel] = (protCounts[sel]||0) + 1;
+    });
+  });
+  const salmonCount = protCounts['F'] || 0;
+
+  const PROT_INFO = {
+    A: { emoji:'🥩', name:'Bresaola / Tacchino / Pollo', max:7 },
+    B: { emoji:'🍗', name:'Carne bianca',                max:6 },
+    C: { emoji:'🥩', name:'Carne rossa',                 max:2 },
+    D: { emoji:'🐟', name:'Pesce bianco',                max:5 },
+    E: { emoji:'🥚', name:'Uova + albume',               max:7 },
+    F: { emoji:'🐡', name:'Salmone / Tonno / Spada',     max:1 },
+    G: { emoji:'🫙', name:'Formaggi freschi',            max:4 },
+    H: { emoji:'🌿', name:'Legumi',                      max:5 },
+    I: { emoji:'🌱', name:'Tempeh',                      max:4 },
+  };
+
+  const freqItems = Object.entries(PROT_INFO).map(([id, info]) => {
+    const count = protCounts[id] || 0;
+    let status  = 'ok';
+    if (id === 'F') {
+      status = count > 1 ? 'danger' : count === 1 ? 'warn' : 'ok';
+    } else {
+      const ratio = count / info.max;
+      status = ratio > 1 ? 'danger' : ratio >= 0.65 ? 'warn' : 'ok';
+    }
+    return { ...info, id, count, status };
+  }).filter(item => item.count > 0 || item.id === 'F');
+
+  const sc = s => s==='ok' ? LIME : s==='warn' ? ORANGE : DANGER;
+  const sl = s => s==='ok' ? 'OK' : s==='warn' ? 'Presente' : 'Limite!';
+
+  // Generate SALVA_NUTRIZIONE export text
+  const { piano, energia, selezioni, totali, delta } = state;
+  const bmr     = Number(energia?.bmr)    || 0;
+  const attivo  = Number(energia?.attivo) || 0;
+  const consumate = bmr + attivo;
+  const now     = new Date();
+  const notionText = [
+    'SALVA_NUTRIZIONE',
+    `Data: ${todayDate()}`,
+    `Piano: ${piano}`,
+    `Kcal Introdotte: ${totali.kcal}`,
+    `Kcal Consumate: ${consumate} (BMR: ${bmr} + Attivo: ${attivo})`,
+    `Delta Calorico: ${delta > 0 ? '+' : ''}${delta}`,
+    `Proteine: ${totali.proteine}g`,
+    `Carboidrati: ${totali.carbo}g`,
+    `Grassi: ${totali.grassi}g`,
+    `Warning Proteine: ${totali.proteine < 130 ? 'Sì' : 'No'}`,
+    `Pasto Libero: ${selezioni.pastoLibero ? 'Sì' : 'No'}`,
+    `Note Pasto Libero: ${selezioni.pastoLibero?.desc || ''}`,
+    `Mese Report: ${MONTHS_IT[now.getMonth()]} ${now.getFullYear()}`,
+  ].join('\n');
+
+  const handleCopy = () => {
+    (navigator.clipboard?.writeText(notionText) || Promise.reject())
+      .catch(() => { const t = document.createElement('textarea'); t.value=notionText; document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); return Promise.resolve(); })
+      .then(() => { setCopied(true); setTimeout(()=>setCopied(false),2500); });
+  };
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%', position:'relative' }}>
+      <div style={{ padding:'14px 20px 8px', flexShrink:0 }}>
+        <BB style={{ fontSize:24, fontWeight:900, color:'#fff', letterSpacing:'0.02em' }}>FREQUENZA</BB>
+        <div style={{ fontSize:12, color:MUTED, marginTop:2 }}>Settimana corrente · {fmtDate(now)}</div>
+      </div>
+      <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
+        {/* Legend */}
+        <div style={{ display:'flex', gap:14, marginBottom:12 }}>
+          {[['OK',LIME],['Presente',ORANGE],['Limite',DANGER]].map(([l,c]) => (
+            <div key={l} style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <div style={{ width:6, height:6, borderRadius:'50%', background:c }} />
+              <span style={{ fontSize:10, color:MUTED }}>{l}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Frequency table */}
+        {freqItems.length > 0 ? (
+          <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, overflow:'hidden', marginBottom:12 }}>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 80px', padding:'8px 14px', borderBottom:`1px solid ${BORDER}`, background:CARD2 }}>
+              {['Alimento','Freq.','Stato'].map((h,i) => (
+                <span key={h} style={{ fontSize:9, color:MUTED, textTransform:'uppercase', letterSpacing:'0.07em', textAlign:i===1?'center':i===2?'right':'left' }}>{h}</span>
+              ))}
+            </div>
+            {freqItems.map((item,i) => (
+              <div key={item.id}>
+                {i > 0 && <div style={{ borderTop:`1px solid ${BORDER}`, margin:'0 14px' }} />}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 80px', padding:'9px 14px', alignItems:'center' }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                    <span style={{ fontSize:16 }}>{item.emoji}</span>
+                    <div>
+                      <div style={{ fontSize:12, fontWeight:500, lineHeight:1.2 }}>{item.name}</div>
+                      <div style={{ fontSize:9, color:MUTED }}>max {item.max}×/sett</div>
+                    </div>
+                  </div>
+                  <BB style={{ fontSize:22, fontWeight:900, color:sc(item.status), textAlign:'center' }}>{item.count}</BB>
+                  <div style={{ display:'flex', alignItems:'center', gap:4, justifyContent:'flex-end' }}>
+                    <div style={{ width:6, height:6, borderRadius:'50%', background:sc(item.status), flexShrink:0 }} />
+                    <span style={{ fontSize:10, color:sc(item.status), textAlign:'right', lineHeight:1.3 }}>{sl(item.status)}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'20px', textAlign:'center', marginBottom:12 }}>
+            <span style={{ fontSize:12, color:MUTED }}>Nessun dato questa settimana — seleziona i pasti dal Piano</span>
+          </div>
+        )}
+
+        {/* Salmon over-limit banner */}
+        {salmonCount > 1 && (
+          <div style={{ background:'rgba(255,68,68,0.1)', border:`1px solid rgba(255,68,68,0.3)`, borderRadius:12, padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
+            <span style={{ fontSize:16 }}>🔴</span>
+            <span style={{ fontSize:12, color:'#FF8080', lineHeight:1.5 }}>Pesce grasso (salmone/tonno/spada) superato: {salmonCount}× questa settimana — limite 1×</span>
+          </div>
+        )}
+        <div style={{ height:8 }} />
+      </div>
+
+      {/* Notion CTA */}
+      <div style={{ padding:'10px 16px 8px', flexShrink:0 }}>
+        <button onClick={() => setNotionModal(true)}
+          style={{ width:'100%', background:LIME, border:'none', borderRadius:12, padding:'14px', fontFamily:"'Barlow Condensed'", fontSize:17, fontWeight:800, color:'#000', cursor:'pointer', letterSpacing:'0.02em' }}>
+          Salva su Notion →
+        </button>
+      </div>
+
+      {/* Notion bottom sheet */}
+      {notionModal && (
+        <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.82)', display:'flex', alignItems:'flex-end', zIndex:200, backdropFilter:'blur(8px)' }}>
+          <div style={{ background:CARD, borderRadius:'20px 20px 0 0', padding:'20px 20px 24px', width:'100%', maxHeight:'74%', display:'flex', flexDirection:'column' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
+              <BB style={{ fontSize:16, fontWeight:800 }}>Copia e incolla in Claude Chat</BB>
+              <button onClick={() => setNotionModal(false)} style={{ background:'rgba(255,255,255,0.08)', border:'none', color:MUTED2, borderRadius:8, width:28, height:28, cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
+            </div>
+            <p style={{ fontSize:11, color:MUTED, marginBottom:10, lineHeight:1.5 }}>
+              Incolla questo testo in una chat con Claude → Claude salverà i dati su Notion tramite MCP.
+            </p>
+            <div className="scroll-area" style={{ background:'rgba(0,0,0,0.4)', borderRadius:10, padding:'12px 14px', flex:1, marginBottom:14, fontSize:11, color:MUTED2, lineHeight:1.9, fontFamily:'monospace', whiteSpace:'pre-wrap', border:`1px solid ${BORDER}` }}>
+              {notionText}
+            </div>
+            <button onClick={handleCopy}
+              style={{ width:'100%', background: copied ? 'rgba(200,245,58,0.25)' : LIME, border: copied ? `1px solid ${LIME}` : 'none', borderRadius:12, padding:'13px', fontFamily:"'Barlow Condensed'", fontSize:16, fontWeight:800, color: copied ? LIME : '#000', cursor:'pointer', transition:'all .25s' }}>
+              {copied ? '✓ Copiato negli appunti!' : 'Copia testo'}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── BOTTOM NAV ICONS ─────────────────────────────────────────────
+function NavIcon({ id, active }) {
+  const c = active ? LIME : 'rgba(255,255,255,0.38)';
+  if (id===0) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/></svg>;
+  if (id===1) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3L21.5 20H2.5L12 3Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="17" r="1.1" fill={c}/></svg>;
+  if (id===2) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="3,17 8,11 13,14 21,6" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="20" x2="21" y2="20" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke={c} strokeWidth="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke={c} strokeWidth="1.5"/><line x1="9" y1="4" x2="9" y2="9" stroke={c} strokeWidth="1.5"/><line x1="15" y1="4" x2="15" y2="9" stroke={c} strokeWidth="1.5"/><circle cx="8" cy="14" r="1.5" fill={c}/><circle cx="12" cy="14" r="1.5" fill={c}/><circle cx="16" cy="14" r="1.5" fill={c}/></svg>;
+}
+
+const NAV = [
+  { id:0, label:'Piano'     },
+  { id:1, label:'Delta Cal' },
+  { id:2, label:'Dashboard' },
+  { id:3, label:'Frequenza' },
+];
+
+// ── ROOT APP ─────────────────────────────────────────────────────
+function NutriTrack() {
+  const [tab,      setTab]      = useState(0);
+  const [prev,     setPrev]     = useState(0);
+  const [navKey,   setNavKey]   = useState(0);
+  const [appState, setAppState] = useState(loadToday);
+  // Cache rolling 7-day data (recomputed when tab changes or on mount)
+  const [days7, setDays7] = useState(() => getLast7());
+  useEffect(() => { setDays7(getLast7()); }, [tab]);
+
+  const goTab = id => {
+    if (id === tab) return;
+    setPrev(tab); setTab(id); setNavKey(k=>k+1);
+  };
+
+  const dir = tab > prev ? 'asl' : 'asr';
+
+  return (
+    <div style={{ width:390, height:844, background:BG, display:'flex', flexDirection:'column', borderRadius:48, overflow:'hidden', boxShadow:'0 40px 120px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.06)', position:'relative' }}>
+      {/* iOS status bar */}
+      <div style={{ height:52, flexShrink:0, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', background:BG }}>
+        <span style={{ fontFamily:"'DM Sans'", fontSize:14, fontWeight:600, color:'#fff' }}>9:41</span>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="4" width="3" height="7" rx="0.8" fill="rgba(255,255,255,0.4)"/><rect x="4.5" y="2.5" width="3" height="8.5" rx="0.8" fill="rgba(255,255,255,0.6)"/><rect x="9" y="0" width="3" height="11" rx="0.8" fill="#fff"/><rect x="13.5" y="3" width="2.5" height="5" rx="0.8" fill="rgba(255,255,255,0.25)"/></svg>
+          <svg width="15" height="11" viewBox="0 0 15 11"><path d="M7.5 2C9.8 2 11.9 2.9 13.5 4.4L15 2.9C13 1.1 10.4 0 7.5 0C4.6 0 2 1.1 0 2.9L1.5 4.4C3.1 2.9 5.2 2 7.5 2Z" fill="rgba(255,255,255,0.4)"/><path d="M7.5 5C8.9 5 10.2 5.5 11.2 6.4L12.7 4.9C11.3 3.7 9.5 3 7.5 3C5.5 3 3.7 3.7 2.3 4.9L3.8 6.4C4.8 5.5 6.1 5 7.5 5Z" fill="rgba(255,255,255,0.65)"/><circle cx="7.5" cy="9" r="2" fill="#fff"/></svg>
+          <div style={{ width:24, height:12, border:'1.5px solid rgba(255,255,255,0.4)', borderRadius:4, padding:'1.5px 2px', display:'flex', alignItems:'center', position:'relative' }}>
+            <div style={{ width:14, height:'100%', background:LIME, borderRadius:1.5 }} />
+            <div style={{ position:'absolute', right:-4, top:'50%', transform:'translateY(-50%)', width:3, height:6, background:'rgba(255,255,255,0.4)', borderRadius:1 }} />
+          </div>
+        </div>
+      </div>
+
+      {/* Screen */}
+      <div key={navKey} className={dir} style={{ flex:1, overflow:'hidden', minHeight:0 }}>
+        {tab===0 && <ScreenPiano      state={appState} setState={setAppState} days7={days7} />}
+        {tab===1 && <ScreenDelta      state={appState} setState={setAppState} />}
+        {tab===2 && <ScreenDashboard  days7={days7} />}
+        {tab===3 && <ScreenFrequenza  state={appState} days7={days7} />}
+      </div>
+
+      {/* Bottom nav */}
+      <div style={{ background:BG, borderTop:'1px solid rgba(255,255,255,0.08)', display:'flex', padding:'8px 0 22px', flexShrink:0 }}>
+        {NAV.map(item => {
+          const active = tab === item.id;
+          return (
+            <button key={item.id} onClick={() => goTab(item.id)}
+              style={{ flex:1, background:'none', border:'none', cursor:'pointer', display:'flex', flexDirection:'column', alignItems:'center', gap:3, padding:'4px 0' }}>
+              <NavIcon id={item.id} active={active} />
+              <span style={{ fontFamily:"'DM Sans'", fontSize:10, fontWeight: active ? 600 : 400, color: active ? LIME : 'rgba(255,255,255,0.38)', transition:'color .2s' }}>{item.label}</span>
+              {active && <div style={{ width:4, height:4, borderRadius:'50%', background:LIME, marginTop:-1 }} />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Root() {
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'100vw', height:'100vh', background:'#070709' }}>
+      <div id="phone-wrapper"><NutriTrack /></div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
+
+// Scale to fit any viewport (1:1 on real iPhone, scaled down on desktop)
+function scalePhone() {
+  const w = document.getElementById('phone-wrapper');
+  if (!w) return;
+  const s = Math.min(window.innerWidth / 390, window.innerHeight / 844, 1);
+  w.style.transform = `scale(${s})`;
+}
+(function waitAndScale() {
+  const w = document.getElementById('phone-wrapper');
+  if (w) scalePhone(); else requestAnimationFrame(waitAndScale);
+})();
+window.addEventListener('resize', scalePhone);
+</script>
+</body>
+</html>
