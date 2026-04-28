@@ -167,6 +167,13 @@ const mkDefaultState = () => ({
   piano: 'Standard',
   selezioni: { colazione:null, spuntinoMattina:null, pranzoCarbo:null, pranzoProt:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaCarbo:null, cenaProt:null, pastoLibero:null },
   energia: { bmr:1850, attivo:420 },
+  integratori: {
+    acqua: 0,
+    creatina: false,
+    vitaminaD: false, spirulina: false, omega3: false, multiPrz: false,
+    preWorkout: false,
+    intraWorkout: false,
+  },
   totali: emptyTotali(),
   delta: -2270,
   warningProteine: true,
@@ -174,7 +181,12 @@ const mkDefaultState = () => ({
   timestamp: new Date().toISOString(),
 });
 
-const loadToday = () => readDay(todayKey()) || mkDefaultState();
+const loadToday = () => {
+  const stored = readDay(todayKey());
+  if (!stored) return mkDefaultState();
+  const def = mkDefaultState();
+  return { ...stored, integratori: { ...def.integratori, ...(stored.integratori || {}) } };
+};
 
 const persistState = s => {
   writeDay(todayKey(), s);
@@ -334,6 +346,177 @@ const MealSectionDouble = ({ title, subsections, selezioni, onSelect }) => {
     </div>
   );
 };
+
+// ── INTEGRATORI COMPONENTS ───────────────────────────────────────
+function IntegratoriSection({ integratori, onChange }) {
+  const [vitOpen, setVitOpen] = React.useState(false);
+
+  const toggle = key => onChange({ ...integratori, [key]: !integratori[key] });
+  const setAcqua = val => onChange({ ...integratori, acqua: val });
+
+  const vitamine = [
+    { key:'vitaminaD', label:'Vitamina D',  dose:'4.000 UI'        },
+    { key:'spirulina', label:'Spirulina',   dose:'3.000 mg'        },
+    { key:'omega3',    label:'Omega 3',     dose:'2.250 mg'        },
+    { key:'multiPrz',  label:'Multi PRZ',   dose:'1 porzione/gg'   },
+  ];
+
+  const vitActive = vitamine.filter(v => integratori[v.key]).length;
+  const hasAny = integratori.creatina || integratori.preWorkout || integratori.intraWorkout ||
+    integratori.vitaminaD || integratori.spirulina || integratori.omega3 || integratori.multiPrz || integratori.acqua > 0;
+
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+
+  const RowToggle = ({ label, sublabel, val, onTog }) => (
+    <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:`1px solid ${BORDER}` }}>
+      <div>
+        <span style={{ fontSize:13, color:MUTED2 }}>{label}</span>
+        {sublabel && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>{sublabel}</div>}
+      </div>
+      <Toggle value={val} onChange={onTog} />
+    </div>
+  );
+
+  return (
+    <div style={{ background:CARD, border:`1px solid ${hasAny ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, overflow:'hidden', transition:'border-color .2s' }}>
+      {/* Section header */}
+      <div style={{ padding:'11px 14px', borderBottom:`1px solid ${BORDER}`, background:CARD2 }}>
+        <BB style={{ fontSize:14, fontWeight:800, color:'#fff' }}>Integratori &amp; Idratazione</BB>
+      </div>
+
+      {/* ACQUA */}
+      <div style={{ padding:'10px 14px', borderBottom:`1px solid ${BORDER}` }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <span style={{ fontSize:13, color:MUTED2 }}>Acqua extrapasto (L)</span>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <button onClick={() => setAcqua(Math.max(0, parseFloat((integratori.acqua - 0.5).toFixed(1))))}
+              style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>−</button>
+            <BB style={{ fontSize:20, fontWeight:800, color: integratori.acqua >= 2 ? LIME : '#fff', minWidth:30, textAlign:'center' }}>{Number(integratori.acqua).toFixed(1)}</BB>
+            <button onClick={() => setAcqua(Math.min(5, parseFloat((integratori.acqua + 0.5).toFixed(1))))}
+              style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>+</button>
+          </div>
+        </div>
+      </div>
+
+      {/* CREATINA */}
+      <RowToggle
+        label="Creatina"
+        sublabel={integratori.creatina ? `3g standalone${integratori.preWorkout ? ` + 1g pre = ${creatinaTotale}g totali` : ''}` : null}
+        val={integratori.creatina}
+        onTog={() => toggle('creatina')}
+      />
+
+      {/* VITAMINE accordion */}
+      <div style={{ borderBottom:`1px solid ${BORDER}` }}>
+        <div onClick={() => setVitOpen(o => !o)}
+          style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer', userSelect:'none' }}>
+          <span style={{ fontSize:13, color:MUTED2 }}>Vitamine</span>
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            {vitActive > 0 && <BB style={{ fontSize:10, fontWeight:700, color:LIME }}>{vitActive}/4</BB>}
+            <span style={{ color:MUTED, fontSize:13, display:'inline-block', transform:`rotate(${vitOpen?90:0}deg)`, transition:'transform .2s', lineHeight:1 }}>›</span>
+          </div>
+        </div>
+        {vitOpen && (
+          <div style={{ borderTop:`1px solid ${BORDER}`, padding:'6px 14px 8px' }}>
+            {vitamine.map(v => (
+              <div key={v.key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                <div>
+                  <span style={{ fontSize:12.5, color: integratori[v.key] ? '#fff' : MUTED2 }}>{v.label}</span>
+                  <span style={{ fontSize:10, color:MUTED, marginLeft:7 }}>{v.dose}</span>
+                </div>
+                <Toggle value={integratori[v.key]} onChange={() => toggle(v.key)} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* PRE-WORKOUT */}
+      <RowToggle
+        label="Pre-Workout (Big Shot)"
+        sublabel={integratori.preWorkout ? '☕ 160mg · β-ala 1600mg · Crea 1g · Arg 1000mg' : null}
+        val={integratori.preWorkout}
+        onTog={() => toggle('preWorkout')}
+      />
+
+      {/* INTRA-WORKOUT */}
+      <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div>
+          <span style={{ fontSize:13, color:MUTED2 }}>Intra-Workout (Big Shot Intra)</span>
+          {integratori.intraWorkout && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>BCAA 5g · ☕ 100mg · K 331mg · Na 250mg · Mg 167mg</div>}
+        </div>
+        <Toggle value={integratori.intraWorkout} onChange={() => toggle('intraWorkout')} />
+      </div>
+    </div>
+  );
+}
+
+function IntegratoriSummaryCard({ integratori }) {
+  if (!integratori) return null;
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+  const caffeinaTotale = (integratori.preWorkout ? 160 : 0) + (integratori.intraWorkout ? 100 : 0);
+  const vitList = [
+    integratori.vitaminaD && 'Vit D',
+    integratori.spirulina && 'Spirulina',
+    integratori.omega3    && 'Omega 3',
+    integratori.multiPrz  && 'Multi PRZ',
+  ].filter(Boolean);
+  const acquaOk = Number(integratori.acqua) >= 2;
+
+  return (
+    <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'14px 16px', marginBottom:12 }}>
+      <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:10 }}>INTEGRATORI &amp; IDRATAZIONE</BB>
+
+      {/* Acqua */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: acquaOk ? 8 : 4 }}>
+        <span style={{ fontSize:12, color:MUTED2 }}>Acqua extrapasto</span>
+        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+          <BB style={{ fontSize:14, fontWeight:700, color: acquaOk ? LIME : ORANGE }}>{Number(integratori.acqua).toFixed(1)} L</BB>
+          <span style={{ fontSize:11 }}>{acquaOk ? '✓' : '⚠'}</span>
+        </div>
+      </div>
+      {!acquaOk && (
+        <div style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.28)`, borderRadius:8, padding:'7px 10px', marginBottom:8, fontSize:11, color:'#FFB070', lineHeight:1.5 }}>
+          Idratazione insufficiente — obiettivo minimo 2 L/giorno
+        </div>
+      )}
+
+      {/* Creatina */}
+      {creatinaTotale > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Creatina totale</span>
+          <BB style={{ fontSize:12, fontWeight:700, color:LIME }}>{creatinaTotale}g</BB>
+        </div>
+      )}
+
+      {/* Caffeina */}
+      {caffeinaTotale > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Caffeina totale</span>
+          <BB style={{ fontSize:12, fontWeight:700, color:BLUE }}>{caffeinaTotale}mg</BB>
+        </div>
+      )}
+
+      {/* Vitamine */}
+      {vitList.length > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Vitamine assunte</span>
+          <span style={{ fontSize:11, color:LIME, textAlign:'right', maxWidth:'58%', lineHeight:1.4 }}>{vitList.join(' · ')}</span>
+        </div>
+      )}
+
+      {/* Pre / Intra badges */}
+      <div style={{ display:'flex', gap:8, marginTop:6 }}>
+        {[['Pre-W', integratori.preWorkout], ['Intra-W', integratori.intraWorkout]].map(([l,v]) => (
+          <div key={l} style={{ background: v ? 'rgba(200,245,58,0.1)' : 'rgba(255,255,255,0.05)', border:`1px solid ${v ? 'rgba(200,245,58,0.22)' : BORDER}`, borderRadius:8, padding:'5px 10px', flex:1, textAlign:'center' }}>
+            <BB style={{ fontSize:11, fontWeight:700, color: v ? LIME : MUTED }}>{l}</BB>
+            <div style={{ fontSize:9, color: v ? LIME : MUTED, marginTop:1 }}>{v ? 'Sì' : 'No'}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // ── SCREEN 1: PIANO ───────────────────────────────────────────────
 function ScreenPiano({ state, setState, days7 }) {
@@ -592,6 +775,9 @@ function ScreenDelta({ state, setState }) {
           <MacroBar label="Grassi"      grams={grassi}   maxGrams={90}  color={ORANGE} delay={120} />
         </div>
 
+        {/* Integratori summary */}
+        <IntegratoriSummaryCard integratori={state.integratori} />
+
         {/* Warning proteine */}
         {warningProteine && (
           <div className="afu" style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.3)`, borderRadius:12, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'flex-start', gap:10 }}>
@@ -665,6 +851,7 @@ function ScreenDashboard({ days7 }) {
     let surplus=0, deficit=0, warnProt=0, pastoLibero=0;
     const pianoCounts = { Standard:0, Riposo:0, Bulk:0 };
     let deltaCount=0;
+    let sumAcqua=0, acquaCount=0, giorniCreatina=0, giorniPreW=0, giorniIntraW=0, giorniVitamine=0, sumCaffeinaW=0, caffeinaWCount=0;
 
     for (const r of records) {
       const t = r.totali || emptyTotali();
@@ -679,6 +866,16 @@ function ScreenDashboard({ days7 }) {
         deltaCount++;
         if (d >= 0) surplus++; else deficit++;
       }
+      const intr = r.integratori;
+      if (intr) {
+        sumAcqua += Number(intr.acqua) || 0; acquaCount++;
+        if (intr.creatina || intr.preWorkout) giorniCreatina++;
+        if (intr.preWorkout)   giorniPreW++;
+        if (intr.intraWorkout) giorniIntraW++;
+        if (intr.vitaminaD || intr.spirulina || intr.omega3 || intr.multiPrz) giorniVitamine++;
+        const caf = (intr.preWorkout ? 160 : 0) + (intr.intraWorkout ? 100 : 0);
+        if (caf > 0) { sumCaffeinaW += caf; caffeinaWCount++; }
+      }
     }
 
     const avgKcal  = Math.round(sumKcal / loggati);
@@ -688,6 +885,10 @@ function ScreenDashboard({ days7 }) {
 
     const pianoStr = `Standard (${pianoCounts.Standard}gg) / Riposo (${pianoCounts.Riposo}gg) / Bulk (${pianoCounts.Bulk}gg)`;
     const bestPiano = Object.entries(pianoCounts).sort((a,b) => b[1]-a[1]).find(([,v]) => v > 0)?.[0] || '—';
+
+    const avgAcqua       = acquaCount ? (sumAcqua / acquaCount).toFixed(1) : 'N/D';
+    const complianceVit  = loggati ? Math.round((giorniVitamine / loggati) * 100) : 0;
+    const caffeinaMedia  = caffeinaWCount ? Math.round(sumCaffeinaW / caffeinaWCount) : 0;
 
     const text = [
       'SALVA_NUTRIZIONE_MENSILE',
@@ -702,6 +903,13 @@ function ScreenDashboard({ days7 }) {
       `Piano Prevalente: ${pianoStr}`,
       `Giorni Pasto Libero: ${pastoLibero}`,
       `Consistency: ${consistency}%`,
+      `--- Integratori & Idratazione ---`,
+      `Acqua Media: ${avgAcqua}L/gg`,
+      `Giorni Creatina: ${giorniCreatina}/${loggati}`,
+      `Giorni Pre-Workout: ${giorniPreW}/${loggati}`,
+      `Giorni Intra-Workout: ${giorniIntraW}/${loggati}`,
+      `Compliance Vitamine: ${complianceVit}%`,
+      `Caffeina Media (gg workout): ${caffeinaMedia}mg`,
     ].join('\n');
 
     return { text, loggati, daysInMonth, avgKcal, avgDeltaM, surplus, deficit, avgProt, warnProt, pianoStr, pastoLibero, consistency, bestPiano };
@@ -884,6 +1092,9 @@ function ScreenFrequenza({ state, days7 }) {
   const attivo  = Number(energia?.attivo) || 0;
   const consumate = bmr + attivo;
   const now     = new Date();
+  const intr = state.integratori || mkDefaultState().integratori;
+  const creatinaTotaleExport = (intr.creatina ? 3 : 0) + (intr.preWorkout ? 1 : 0);
+  const caffeinaTotaleExport = (intr.preWorkout ? 160 : 0) + (intr.intraWorkout ? 100 : 0);
   const notionText = [
     'SALVA_NUTRIZIONE',
     `Data: ${todayDate()}`,
@@ -898,6 +1109,15 @@ function ScreenFrequenza({ state, days7 }) {
     `Pasto Libero: ${selezioni.pastoLibero ? 'Sì' : 'No'}`,
     `Note Pasto Libero: ${selezioni.pastoLibero?.desc || ''}`,
     `Mese Report: ${MONTHS_IT[now.getMonth()]} ${now.getFullYear()}`,
+    `--- Integratori & Idratazione ---`,
+    `acqua_extrapasto_litri: ${Number(intr.acqua).toFixed(1)}${Number(intr.acqua) < 2 ? ' ⚠' : ' ✓'}`,
+    `creatina_standalone_g: ${intr.creatina ? 3 : 0}`,
+    `creatina_pre_g: ${intr.preWorkout ? 1 : 0}`,
+    `creatina_totale_g: ${creatinaTotaleExport}`,
+    `vitamine: vitamina_d=${intr.vitaminaD}, spirulina=${intr.spirulina}, omega3=${intr.omega3}, multi_prz=${intr.multiPrz}`,
+    `pre_workout: assunto=${intr.preWorkout}, caffeina_mg=160, beta_alanina_mg=1600, creatina_g=1, arginina_mg=1000`,
+    `intra_workout: assunto=${intr.intraWorkout}, bcaa_g=5, caffeina_mg=100, potassio_mg=331, sodio_mg=250, magnesio_mg=167`,
+    `caffeina_totale_mg: ${caffeinaTotaleExport}`,
   ].join('\n');
 
   const handleCopy = () => {
@@ -1000,20 +1220,49 @@ function ScreenFrequenza({ state, days7 }) {
   );
 }
 
+// ── SCREEN: HYDRO & INT ──────────────────────────────────────────
+function ScreenIntegratori({ state, setState }) {
+  const setIntegratori = intr => setState(prev => {
+    const next = { ...prev, integratori: intr, timestamp: new Date().toISOString() };
+    persistState(next);
+    return next;
+  });
+
+  const intr = state.integratori || mkDefaultState().integratori;
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ padding:'14px 20px 10px', flexShrink:0 }}>
+        <BB style={{ fontSize:24, fontWeight:900, letterSpacing:'0.02em' }}>
+          <span style={{ color:'#fff' }}>HYDRO</span><span style={{ color:LIME }}>&amp;INT</span>
+        </BB>
+        <div style={{ fontSize:12, color:MUTED, marginTop:2 }}>Integratori &amp; Idratazione giornalieri</div>
+      </div>
+      <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
+        <IntegratoriSection integratori={intr} onChange={setIntegratori} />
+        <IntegratoriSummaryCard integratori={intr} />
+        <div style={{ height:8 }} />
+      </div>
+    </div>
+  );
+}
+
 // ── BOTTOM NAV ICONS ─────────────────────────────────────────────
 function NavIcon({ id, active }) {
   const c = active ? LIME : 'rgba(255,255,255,0.38)';
   if (id===0) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/></svg>;
-  if (id===1) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3L21.5 20H2.5L12 3Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="17" r="1.1" fill={c}/></svg>;
-  if (id===2) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="3,17 8,11 13,14 21,6" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="20" x2="21" y2="20" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  if (id===1) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3.5C12 3.5 5 11.5 5 15.5a7 7 0 0 0 14 0c0-4-7-12-7-12Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill="none"/><path d="M9 17c0 1.66 1.34 3 3 3" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  if (id===2) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3L21.5 20H2.5L12 3Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="17" r="1.1" fill={c}/></svg>;
+  if (id===3) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="3,17 8,11 13,14 21,6" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="20" x2="21" y2="20" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke={c} strokeWidth="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke={c} strokeWidth="1.5"/><line x1="9" y1="4" x2="9" y2="9" stroke={c} strokeWidth="1.5"/><line x1="15" y1="4" x2="15" y2="9" stroke={c} strokeWidth="1.5"/><circle cx="8" cy="14" r="1.5" fill={c}/><circle cx="12" cy="14" r="1.5" fill={c}/><circle cx="16" cy="14" r="1.5" fill={c}/></svg>;
 }
 
 const NAV = [
   { id:0, label:'Piano'     },
-  { id:1, label:'Delta Cal' },
-  { id:2, label:'Dashboard' },
-  { id:3, label:'Frequenza' },
+  { id:1, label:'Hydro&Int' },
+  { id:2, label:'Delta Cal' },
+  { id:3, label:'Dashboard' },
+  { id:4, label:'Frequenza' },
 ];
 
 // ── ROOT APP ─────────────────────────────────────────────────────
@@ -1050,10 +1299,11 @@ function NutriTrack() {
 
       {/* Screen */}
       <div key={navKey} className={dir} style={{ flex:1, overflow:'hidden', minHeight:0 }}>
-        {tab===0 && <ScreenPiano      state={appState} setState={setAppState} days7={days7} />}
-        {tab===1 && <ScreenDelta      state={appState} setState={setAppState} />}
-        {tab===2 && <ScreenDashboard  days7={days7} />}
-        {tab===3 && <ScreenFrequenza  state={appState} days7={days7} />}
+        {tab===0 && <ScreenPiano         state={appState} setState={setAppState} days7={days7} />}
+        {tab===1 && <ScreenIntegratori  state={appState} setState={setAppState} />}
+        {tab===2 && <ScreenDelta        state={appState} setState={setAppState} />}
+        {tab===3 && <ScreenDashboard    days7={days7} />}
+        {tab===4 && <ScreenFrequenza    state={appState} days7={days7} />}
       </div>
 
       {/* Bottom nav */}
