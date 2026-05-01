@@ -87,20 +87,19 @@ const MEAL_PLANS = {
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
-      { id:'A', desc:'160g pasta integrale',  kcal:560, p:20, c:112, g:3   },
-      { id:'B', desc:'150g pasta bianca',     kcal:540, p:18, c:105, g:2   },
-      { id:'C', desc:'200g riso basmati',     kcal:560, p:13, c:120, g:1.5 },
-      { id:'D', desc:'160g pane grano duro',  kcal:520, p:16, c:100, g:4   },
-      { id:'E', desc:'210g pane integrale',   kcal:520, p:18, c:95,  g:5   },
+      { id:'A', desc:'150g pasta bianca oppure 160g pasta integrale',         kcal:540, p:18, c:105, g:2   },
+      { id:'B', desc:'160g riso basmati / cous cous / farro / orzo',          kcal:448, p:10, c:96,  g:1.5 },
+      { id:'C', desc:'200g pane di grano duro oppure 210g pane integrale',    kcal:650, p:20, c:125, g:5   },
     ],
     pranzoProt: PROT_BASE,
     spuntinoPomeriggio: SPUNTINO_BASE,
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'140g pasta integrale',                              kcal:510, p:18, c:100, g:3   },
-      { id:'B', desc:'150g riso basmati / cous cous / farro / orzo',     kcal:520, p:12, c:115, g:1.5 },
-      { id:'C', desc:'160g pane integrale',                              kcal:400, p:14, c:75,  g:4   },
-      { id:'D', desc:'200g patate al forno/lesse + 100g pane',           kcal:420, p:10, c:90,  g:1   },
+      { id:'A', desc:'140g pasta bianca oppure 150g pasta integrale',                    kcal:504, p:17, c:99,  g:2   },
+      { id:'B', desc:'150g riso basmati / cous cous / farro / orzo',                     kcal:420, p:10, c:90,  g:1.5 },
+      { id:'C', desc:'160g pane di grano duro oppure 170g pane integrale',               kcal:520, p:17, c:100, g:4   },
+      { id:'D', desc:'200g patate al forno/lesse + 100g pasta bianca',                   kcal:490, p:14, c:100, g:2   },
+      { id:'E', desc:'180g patate al forno/lesse + 100g pane',                           kcal:385, p:9,  c:82,  g:2   },
     ],
     cenaProt: PROT_CENA,
     condimentoPranzo: CONDIMENTO,
@@ -111,6 +110,7 @@ const MEAL_PLANS = {
       { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',             kcal:310, p:21, c:33, g:10 },
       { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + frutta fresca di stagione + 10g frutta secca + spremitura', kcal:450, p:24, c:60, g:11 },
       { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',                 kcal:350, p:28, c:48, g:5  },
+      { id:'E', desc:'60g pane integrale + 150ml albume strapazzato + spremuta arancia',                                  kcal:280, p:24, c:42, g:1.5 },
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
@@ -128,11 +128,11 @@ const MEAL_PLANS = {
     ],
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'120g pasta bianca',                                              kcal:430, p:15, c:87, g:2 },
-      { id:'B', desc:'140g pasta integrale',                                           kcal:490, p:18, c:98, g:3 },
-      { id:'C', desc:'160g riso basmati / cous cous / farro / orzo',                  kcal:445, p:10, c:96, g:1 },
-      { id:'D', desc:'160g pane di grano duro oppure 160g pane integrale',             kcal:415, p:14, c:81, g:4 },
-      { id:'E', desc:'480g patate al forno/lesse (peso a crudo)',                      kcal:370, p:10, c:84, g:0 },
+      { id:'A', desc:'110g pasta bianca oppure 120g pasta integrale',                    kcal:390, p:13, c:77, g:2 },
+      { id:'B', desc:'120g riso basmati / cous cous / farro / orzo',                     kcal:335, p:8,  c:72, g:1 },
+      { id:'C', desc:'150g pane di grano duro oppure 160g pane integrale',               kcal:494, p:16, c:97, g:4 },
+      { id:'D', desc:'480g patate al forno/lesse (peso a crudo)',                         kcal:370, p:10, c:84, g:0 },
+      { id:'E', desc:'310g gnocchi di patate',                                            kcal:372, p:7,  c:82, g:1 },
     ],
     cenaProt: PROT_CENA,
     condimentoPranzo: CONDIMENTO,
@@ -1312,9 +1312,8 @@ function ScreenFrequenza({ state, days7 }) {
               {i > 0 && <div style={{ borderTop:`1px solid ${BORDER}`, margin:'0 14px' }} />}
               <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 90px', padding:'9px 14px', alignItems:'center' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                  <span style={{ fontSize:16 }}>{item.emoji}</span>
                   <div>
-                    <div style={{ fontSize:12, fontWeight:500, lineHeight:1.2 }}>{item.name}</div>
+                    <div style={{ fontSize:12, fontWeight:500, lineHeight:1.2, color:MUTED2 }}>{item.name}</div>
                     <div style={{ fontSize:9, color:MUTED }}>
                       {item.min === 0 ? `max ${item.max}×/sett` : `${item.min}–${item.max}×/sett`}
                     </div>
