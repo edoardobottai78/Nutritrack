@@ -528,10 +528,16 @@ function ScreenPiano({ state, setState, days7 }) {
   const [plTesto,         setPlTesto]         = useState(state.selezioni.pastoLibero?.desc || '');
   const [plError,         setPlError]         = useState(false);
   const [plManualKcal,    setPlManualKcal]    = useState('');
+  const [plManualP,       setPlManualP]       = useState('');
+  const [plManualC,       setPlManualC]       = useState('');
+  const [plManualG,       setPlManualG]       = useState('');
   const [extraTesto,      setExtraTesto]      = useState(state.selezioni.extraFuoriPiano?.desc || '');
   const [extraLoading,    setExtraLoading]    = useState(false);
   const [extraError,      setExtraError]      = useState(false);
   const [extraManualKcal, setExtraManualKcal] = useState('');
+  const [extraManualP,    setExtraManualP]    = useState('');
+  const [extraManualC,    setExtraManualC]    = useState('');
+  const [extraManualG,    setExtraManualG]    = useState('');
   const plan = MEAL_PLANS[state.piano] || MEAL_PLANS.Standard;
 
   // Count how many other days this week already used pasto libero
@@ -579,10 +585,9 @@ function ScreenPiano({ state, setState, days7 }) {
   };
 
   const handlePlManual = () => {
-    const k    = Math.max(0, parseInt(plManualKcal) || 0);
-    const plSel = { desc: plTesto, kcal: k, p: 0, c: 0, g: 0 };
+    const plSel = { desc: plTesto, kcal: parseInt(plManualKcal)||0, p: parseInt(plManualP)||0, c: parseInt(plManualC)||0, g: parseInt(plManualG)||0 };
     setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } }); persistState(next); return next; });
-    setPlError(false); setPlManualKcal('');
+    setPlError(false); setPlManualKcal(''); setPlManualP(''); setPlManualC(''); setPlManualG('');
   };
 
   const handleExtraAI = async () => {
@@ -599,10 +604,9 @@ function ScreenPiano({ state, setState, days7 }) {
   };
 
   const handleExtraManual = () => {
-    const k    = Math.max(0, parseInt(extraManualKcal) || 0);
-    const efSel = { desc: extraTesto, kcal: k, p: 0, c: 0, g: 0 };
+    const efSel = { desc: extraTesto, kcal: parseInt(extraManualKcal)||0, p: parseInt(extraManualP)||0, c: parseInt(extraManualC)||0, g: parseInt(extraManualG)||0 };
     setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, extraFuoriPiano: efSel } }); persistState(next); return next; });
-    setExtraError(false); setExtraManualKcal('');
+    setExtraError(false); setExtraManualKcal(''); setExtraManualP(''); setExtraManualC(''); setExtraManualG('');
   };
 
   const setPiano = id => setState(prev => {
@@ -711,13 +715,12 @@ function ScreenPiano({ state, setState, days7 }) {
           {plError && (
             <div style={{ marginTop:8, background:'rgba(255,68,68,0.08)', border:`1px solid rgba(255,68,68,0.28)`, borderRadius:8, padding:'10px 12px' }}>
               <div style={{ fontSize:11, color:'#FF8080', marginBottom:8, lineHeight:1.5 }}>Calcolo non disponibile — inserisci le kcal manualmente</div>
-              <div style={{ display:'flex', gap:8 }}>
-                <input type="number" min="0" value={plManualKcal} onChange={e => setPlManualKcal(e.target.value)} placeholder="es. 350"
-                  style={{ flex:1, background:'rgba(255,255,255,0.07)', border:`1px solid rgba(255,255,255,0.15)`, borderRadius:8, color:'#fff', fontSize:14, padding:'8px 10px', outline:'none' }} />
-                <button onClick={handlePlManual} disabled={!plManualKcal}
-                  style={{ background: plManualKcal ? LIME : 'rgba(200,245,58,0.2)', border:'none', borderRadius:8, padding:'8px 16px', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', cursor: plManualKcal ? 'pointer' : 'default' }}>
-                  OK
-                </button>
+              <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+                <input type="number" min="0" value={plManualKcal} onChange={e => setPlManualKcal(e.target.value)} placeholder="kcal" style={{ flex:'2 1 60px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, color:'#fff', fontSize:13, padding:'8px 8px', outline:'none' }} />
+                <input type="number" min="0" value={plManualP} onChange={e => setPlManualP(e.target.value)} placeholder="P g" style={{ flex:'1 1 44px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, color:'#fff', fontSize:13, padding:'8px 8px', outline:'none' }} />
+                <input type="number" min="0" value={plManualC} onChange={e => setPlManualC(e.target.value)} placeholder="C g" style={{ flex:'1 1 44px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, color:'#fff', fontSize:13, padding:'8px 8px', outline:'none' }} />
+                <input type="number" min="0" value={plManualG} onChange={e => setPlManualG(e.target.value)} placeholder="G g" style={{ flex:'1 1 44px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(255,255,255,0.15)', borderRadius:8, color:'#fff', fontSize:13, padding:'8px 8px', outline:'none' }} />
+                <button onClick={handlePlManual} disabled={!plManualKcal} style={{ background: plManualKcal ? '#C8F53A' : 'rgba(200,245,58,0.2)', border:'none', borderRadius:8, padding:'8px 14px', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', cursor: plManualKcal ? 'pointer' : 'default' }}>OK</button>
               </div>
             </div>
           )}
@@ -908,6 +911,7 @@ function ScreenDashboard({ days7 }) {
   const today = new Date();
   const [monthlyModal, setMonthlyModal] = useState(false);
   const [copiedMonthly, setCopiedMonthly] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState({ year: today.getFullYear(), month: today.getMonth() });
 
   // Streak: consecutive days with ≥1 selection ending today
   let streak = 0;
@@ -944,8 +948,8 @@ function ScreenDashboard({ days7 }) {
 
   // ── MONTHLY REPORT ────────────────────────────────────────────────
   const monthlyReport = useMemo(() => {
-    const yr  = today.getFullYear();
-    const mo  = today.getMonth(); // 0-based
+    const yr  = selectedMonth.year;
+    const mo  = selectedMonth.month; // 0-based
     const daysInMonth = new Date(yr, mo + 1, 0).getDate();
     const prefix = `nutritrack_${yr}-${String(mo + 1).padStart(2,'0')}-`;
 
@@ -1025,7 +1029,7 @@ function ScreenDashboard({ days7 }) {
     ].join('\n');
 
     return { text, loggati, daysInMonth, avgKcal, avgDeltaM, surplus, deficit, avgProt, warnProt, pianoStr, pastoLibero, consistency, bestPiano };
-  }, [monthlyModal]);
+  }, [selectedMonth]);
 
   const handleCopyMonthly = () => {
     if (!monthlyReport) return;
@@ -1093,6 +1097,24 @@ function ScreenDashboard({ days7 }) {
           <StatCard label="Piano prevalente" value={prevalentPiano}  color={BLUE}                                                                              delay={150} />
         </div>
 
+        {/* Month selector */}
+        <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:8 }}>SELEZIONA MESE</BB>
+        <div style={{ display:'flex', gap:6, marginBottom:10 }}>
+          {[2,1,0].map(offset => {
+            const d = new Date(today.getFullYear(), today.getMonth() - offset, 1);
+            const yr = d.getFullYear();
+            const mo = d.getMonth();
+            const act = selectedMonth.year === yr && selectedMonth.month === mo;
+            return (
+              <button key={offset} onClick={() => setSelectedMonth({ year: yr, month: mo })}
+                style={{ flex:1, border:`1px solid ${act ? LIME : BORDER}`, background: act ? 'rgba(200,245,58,0.1)' : CARD, borderRadius:99, padding:'7px 4px', cursor:'pointer', transition:'all .2s', textAlign:'center' }}>
+                <BB style={{ fontSize:12, fontWeight:700, color: act ? LIME : MUTED2, display:'block' }}>{MONTHS_IT[mo].substring(0,3).toUpperCase()}</BB>
+                <div style={{ fontSize:10, color: act ? LIME : MUTED }}>{yr}</div>
+              </button>
+            );
+          })}
+        </div>
+
         {/* Monthly report button */}
         <button onClick={() => setMonthlyModal(true)}
           style={{ width:'100%', background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'14px', fontFamily:"'Barlow Condensed'", fontSize:16, fontWeight:800, color:'#fff', cursor:'pointer', letterSpacing:'0.03em', display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginBottom:12, transition:'border-color .2s' }}
@@ -1111,7 +1133,7 @@ function ScreenDashboard({ days7 }) {
         <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.82)', display:'flex', alignItems:'flex-end', zIndex:200, backdropFilter:'blur(8px)' }}>
           <div style={{ background:CARD, borderRadius:'20px 20px 0 0', padding:'20px 20px 24px', width:'100%', maxHeight:'80%', display:'flex', flexDirection:'column' }}>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
-              <BB style={{ fontSize:16, fontWeight:800 }}>Report Mensile · {MONTHS_IT[today.getMonth()]} {today.getFullYear()}</BB>
+              <BB style={{ fontSize:16, fontWeight:800 }}>Report Mensile · {MONTHS_IT[selectedMonth.month]} {selectedMonth.year}</BB>
               <button onClick={() => setMonthlyModal(false)} style={{ background:'rgba(255,255,255,0.08)', border:'none', color:MUTED2, borderRadius:8, width:28, height:28, cursor:'pointer', fontSize:16, display:'flex', alignItems:'center', justifyContent:'center' }}>✕</button>
             </div>
 
