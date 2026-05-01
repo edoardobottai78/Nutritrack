@@ -14,14 +14,12 @@ export default async function handler(req, res) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
-  const prompt = `Stima i macronutrienti per il seguente pasto. Rispondi SOLO con un oggetto JSON valido, nessun testo extra.
+  const systemPrompt = `Sei un nutrizionista esperto. Ricevi una descrizione di alimenti consumati dall'utente e devi stimare i valori nutrizionali totali.
+Rispondi SOLO con un oggetto JSON valido, senza testo aggiuntivo, senza backtick, senza markdown. Formato esatto:
+{"kcal": numero_intero, "carboidrati": numero_intero, "proteine": numero_intero, "grassi": numero_intero}
+Basa le stime su grammature standard italiane per alimenti comuni. Se l'utente non specifica la quantità, usa una porzione standard.`;
 
-Pasto: "${description.trim()}"
-
-Formato risposta:
-{"kcal": <numero>, "proteine": <numero>, "carboidrati": <numero>, "grassi": <numero>}
-
-Tutti i valori sono numeri interi. "carboidrati" include zuccheri. Stima ragionevole per una porzione normale.`;
+  const userMessage = `Ho mangiato: ${description.trim()}`;
 
   try {
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
@@ -32,9 +30,10 @@ Tutti i valori sono numeri interi. "carboidrati" include zuccheri. Stima ragione
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-opus-4-5',
         max_tokens: 128,
-        messages: [{ role: 'user', content: prompt }],
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
       }),
     });
 
@@ -46,14 +45,14 @@ Tutti i valori sono numeri interi. "carboidrati" include zuccheri. Stima ragione
     const data = await anthropicRes.json();
     const text = data.content?.[0]?.text?.trim() || '';
 
-    const match = text.match(/\{[\s\S]*\}/);
+    const match = text.match(/\{[\s\S]*?\}/);
     if (!match) return res.status(502).json({ error: 'Invalid response from AI', raw: text });
 
     const macros = JSON.parse(match[0]);
-    const kcal = Math.round(Number(macros.kcal) || 0);
-    const proteine = Math.round(Number(macros.proteine) || 0);
+    const kcal        = Math.round(Number(macros.kcal)        || 0);
+    const proteine    = Math.round(Number(macros.proteine)    || 0);
     const carboidrati = Math.round(Number(macros.carboidrati) || 0);
-    const grassi = Math.round(Number(macros.grassi) || 0);
+    const grassi      = Math.round(Number(macros.grassi)      || 0);
 
     return res.status(200).json({ kcal, proteine, carboidrati, grassi });
   } catch (e) {

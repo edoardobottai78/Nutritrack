@@ -50,91 +50,93 @@ const MUTED2 = 'rgba(255,255,255,0.58)';
 // ── MEAL DATA ────────────────────────────────────────────────────
 // Shared protein options (pranzo + cena base)
 const PROT_BASE = [
-  { id:'A', desc:'100g bresaola / arrosto tacchino / arrosto pollo', kcal:120, p:22, c:0,  g:3  },
-  { id:'B', desc:'150g carne bianca',                                 kcal:160, p:32, c:0,  g:4  },
-  { id:'C', desc:'120g carne rossa',                                  kcal:200, p:26, c:0,  g:11 },
-  { id:'D', desc:'200g pesce bianco',                                 kcal:140, p:36, c:0,  g:2  },
-  { id:'E', desc:'2 uova + 100ml albume',                             kcal:130, p:24, c:1,  g:7  },
-  { id:'F', desc:'150g salmone / pesce spada / tonno [MAX 1×/sett]',  kcal:180, p:28, c:0,  g:8, maxPerWeek:1 },
-  { id:'G', desc:'150g formaggi freschi (fiocchi latte)',             kcal:170, p:18, c:4,  g:8  },
-  { id:'H', desc:'150g legumi cotti o 50g secco',                     kcal:110, p:8,  c:18, g:1  },
+  { id:'A', desc:'100g bresaola / arrosto tacchino / arrosto pollo', kcal:110, p:23, c:1,  g:2  },
+  { id:'B', desc:'150g carne bianca',                                 kcal:165, p:35, c:0,  g:3  },
+  { id:'C', desc:'120g carne rossa',                                  kcal:180, p:26, c:0,  g:8  },
+  { id:'D', desc:'200g pesce bianco',                                 kcal:180, p:40, c:0,  g:2  },
+  { id:'E', desc:'2 uova + 100ml albume',                             kcal:195, p:23, c:2,  g:10 },
+  { id:'F', desc:'150g salmone / pesce spada / tonno [MAX 1×/sett]',  kcal:250, p:30, c:0,  g:14, maxPerWeek:1 },
+  { id:'G', desc:'150g formaggi freschi (fiocchi latte)',             kcal:150, p:18, c:5,  g:7  },
+  { id:'H', desc:'150g legumi cotti o 50g secco',                     kcal:160, p:11, c:25, g:1  },
 ];
 const PROT_CENA = [...PROT_BASE,
-  { id:'I', desc:'90g tempeh', kcal:120, p:12, c:6, g:6 },
+  { id:'I', desc:'90g tempeh', kcal:170, p:17, c:8, g:10 },
 ];
 const SPUNTINO_BASE = [
-  { id:'A', desc:'150g frutta stagione + 20g cioccolato fondente',                  kcal:180, p:3,  c:28, g:7 },
-  { id:'B', desc:'150g yogurt bianco magro + 20g grana + 150g frutta stagione',     kcal:220, p:18, c:24, g:6 },
-  { id:'C', desc:'20g grana + 150g frutta stagione',                                kcal:130, p:8,  c:20, g:4 },
-  { id:'D', desc:'1 pacchetto crackers + 20g grana oppure 20g frutta secca',        kcal:160, p:7,  c:18, g:6 },
+  { id:'A', desc:'150g frutta stagione + 20g cioccolato fondente',   kcal:185, p:2, c:23, g:10 },
+  { id:'B', desc:'150g yogurt bianco magro + 150g frutta stagione',  kcal:175, p:6, c:25, g:5  },
+  { id:'C', desc:'20g grana + 150g frutta stagione',                 kcal:150, p:7, c:18, g:6  },
+  { id:'D', desc:'25g crackers + 20g grana (o 20g frutta secca)',    kcal:210, p:8, c:15, g:14 },
 ];
 const SPUNTINO_EXTRA = [
-  { id:'A', desc:'3 gallette grano saraceno + marmellata senza zuccheri',           kcal:160, p:3,  c:32, g:1 },
+  { id:'A', desc:'3 gallette (grano saraceno)',                                      kcal:105, p:3,  c:22, g:1 },
   { id:'B', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino', kcal:180, p:14, c:30, g:2 },
-  { id:'C', desc:'150g frutta + 20g grana',                                         kcal:130, p:8,  c:20, g:4 },
+  { id:'C', desc:'150g frutta + 20g grana',                                         kcal:150, p:7,  c:18, g:6 },
+];
+const CONDIMENTO = [
+  { id:'A', desc:'Olio EVO 1 cucchiaio (10g)', kcal:90, p:0, c:0, g:10 },
 ];
 
 const MEAL_PLANS = {
   Standard: {
     colazione: [
-      { id:'A', desc:'Toast — 70g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',                                              kcal:420, p:32, c:42, g:12 },
-      { id:'B', desc:'70g pane integrale + 150ml albume strapazzato + spremuta arancia',                                                                  kcal:380, p:36, c:40, g:6  },
-      { id:'C', desc:'150g yogurt greco + 50g farina avena + 100g frutta fresca + 10g frutta secca',                                                      kcal:427, p:22, c:56, g:13 },
-      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta o marmellata',                                                      kcal:338, p:25, c:51, g:4  },
+      { id:'A', desc:'Toast — 70g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',             kcal:340, p:23, c:38, g:11 },
+      { id:'B', desc:'70g pane integrale + 150ml albume strapazzato + spremuta arancia',                                  kcal:380, p:36, c:40, g:6  },
+      { id:'C', desc:'150g yogurt greco + 50g farina avena + 100g frutta fresca + 10g frutta secca + spremitura arancia', kcal:450, p:24, c:60, g:11 },
+      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',                 kcal:350, p:28, c:48, g:5  },
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
-      { id:'A', desc:'160g pasta integrale',  kcal:330, p:12, c:62, g:2 },
-      { id:'B', desc:'150g pasta bianca',     kcal:310, p:11, c:60, g:1 },
-      { id:'C', desc:'200g riso basmati',     kcal:280, p:6,  c:62, g:1 },
-      { id:'D', desc:'160g pane grano duro',  kcal:350, p:12, c:66, g:3 },
-      { id:'E', desc:'210g pane integrale',   kcal:340, p:13, c:62, g:4 },
+      { id:'A', desc:'160g pasta integrale',  kcal:560, p:20, c:112, g:3   },
+      { id:'B', desc:'150g pasta bianca',     kcal:540, p:18, c:105, g:2   },
+      { id:'C', desc:'200g riso basmati',     kcal:560, p:13, c:120, g:1.5 },
+      { id:'D', desc:'160g pane grano duro',  kcal:520, p:16, c:100, g:4   },
+      { id:'E', desc:'210g pane integrale',   kcal:520, p:18, c:95,  g:5   },
     ],
     pranzoProt: PROT_BASE,
     spuntinoPomeriggio: SPUNTINO_BASE,
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'140g pasta bianca',                              kcal:295, p:10, c:57, g:1 },
-      { id:'B', desc:'150g pasta integrale',                           kcal:310, p:11, c:58, g:2 },
-      { id:'C', desc:'150g riso basmati / cous cous / farro / orzo',   kcal:260, p:6,  c:56, g:1 },
-      { id:'D', desc:'160g pane grano duro',                           kcal:330, p:12, c:62, g:3 },
-      { id:'E', desc:'200g patate al forno o lesse',                   kcal:140, p:4,  c:32, g:0 },
-      { id:'F', desc:'180g pane integrale',                            kcal:340, p:13, c:62, g:4 },
+      { id:'A', desc:'140g pasta integrale',                              kcal:510, p:18, c:100, g:3   },
+      { id:'B', desc:'150g riso basmati / cous cous / farro / orzo',     kcal:520, p:12, c:115, g:1.5 },
+      { id:'C', desc:'160g pane integrale',                              kcal:400, p:14, c:75,  g:4   },
+      { id:'D', desc:'200g patate al forno/lesse + 100g pane',           kcal:420, p:10, c:90,  g:1   },
     ],
     cenaProt: PROT_CENA,
+    condimentoPranzo: CONDIMENTO,
+    condimentoCena: CONDIMENTO,
   },
   Riposo: {
     colazione: [
-      { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',                                              kcal:380, p:30, c:38, g:12 },
-      { id:'B', desc:'Toast+ — 60g pane integrale + 150ml albume strapazzato + spremitura arancia',                                                       kcal:340, p:34, c:36, g:6  },
-      { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + 100g frutta + 10g frutta secca',                                                             kcal:427, p:22, c:56, g:13 },
-      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta o marmellata',                                                      kcal:338, p:25, c:51, g:4  },
+      { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',             kcal:310, p:21, c:33, g:10 },
+      { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + frutta fresca di stagione + 10g frutta secca + spremitura', kcal:450, p:24, c:60, g:11 },
+      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',                 kcal:350, p:28, c:48, g:5  },
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
-      { id:'A', desc:'130g pasta bianca',                              kcal:275, p:10, c:52, g:1 },
-      { id:'B', desc:'140g pasta integrale',                           kcal:290, p:11, c:54, g:2 },
-      { id:'C', desc:'140g riso basmati / cous cous / farro / orzo',   kcal:240, p:4,  c:43, g:1 },
-      { id:'D', desc:'190g pane grano duro',                           kcal:415, p:14, c:78, g:4 },
-      { id:'E', desc:'180g pane integrale',                            kcal:310, p:11, c:53, g:3 },
+      { id:'A', desc:'130g pasta bianca',                              kcal:460, p:16, c:93, g:2 },
+      { id:'B', desc:'140g pasta integrale',                           kcal:490, p:18, c:98, g:3 },
+      { id:'C', desc:'140g riso basmati / cous cous / farro / orzo',   kcal:390, p:9,  c:84, g:1 },
+      { id:'D', desc:'190g pane di grano duro',                        kcal:494, p:15, c:96, g:4 },
+      { id:'E', desc:'190g pane integrale',                            kcal:471, p:17, c:86, g:5 },
     ],
     pranzoProt: PROT_BASE,
     spuntinoPomeriggio: [
       ...SPUNTINO_BASE,
-      { id:'E', desc:'3 gallette grano saraceno + marmellata senza zuccheri',           kcal:160, p:3,  c:32, g:1 },
-      { id:'F', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino', kcal:180, p:14, c:30, g:2 },
+      { id:'E', desc:'3 gallette (grano saraceno)',                                        kcal:105, p:3,  c:22, g:1 },
+      { id:'F', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino',   kcal:180, p:14, c:30, g:2 },
     ],
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'120g pasta bianca',                                          kcal:250, p:9,  c:49, g:1 },
-      { id:'B', desc:'150g pasta integrale',                                       kcal:310, p:11, c:58, g:2 },
-      { id:'C', desc:'120g riso basmati / cous cous / farro / orzo',               kcal:200, p:5,  c:45, g:1 },
-      { id:'D', desc:'160g pane grano duro',                                       kcal:350, p:12, c:67, g:3 },
-      { id:'E', desc:'200g patate al forno/lesse o 100g pasta bianca',             kcal:140, p:4,  c:32, g:0 },
-      { id:'F', desc:'310g gnocchi di patate',                                     kcal:360, p:8,  c:72, g:3 },
-      { id:'G', desc:'480g patate al forno/lesse (peso crudo)',                    kcal:280, p:7,  c:63, g:1 },
+      { id:'A', desc:'120g pasta bianca',                                              kcal:430, p:15, c:87, g:2 },
+      { id:'B', desc:'140g pasta integrale',                                           kcal:490, p:18, c:98, g:3 },
+      { id:'C', desc:'160g riso basmati / cous cous / farro / orzo',                  kcal:445, p:10, c:96, g:1 },
+      { id:'D', desc:'160g pane di grano duro oppure 160g pane integrale',             kcal:415, p:14, c:81, g:4 },
+      { id:'E', desc:'480g patate al forno/lesse (peso a crudo)',                      kcal:370, p:10, c:84, g:0 },
     ],
     cenaProt: PROT_CENA,
+    condimentoPranzo: CONDIMENTO,
+    condimentoCena: CONDIMENTO,
   },
 };
 
@@ -153,20 +155,29 @@ const emptyTotali = () => ({ kcal:0, proteine:0, carbo:0, grassi:0 });
 
 const calcTotali = selezioni => {
   let kcal=0, proteine=0, carbo=0, grassi=0;
-  const MEAL_KEYS = ['colazione','spuntinoMattina','pranzoCarbo','pranzoProt','spuntinoPomeriggio','spuntinoExtra','cenaCarbo','cenaProt'];
+  const MEAL_KEYS = ['colazione','spuntinoMattina','pranzoCarbo','pranzoProt','condimentoPranzo','spuntinoPomeriggio','spuntinoExtra','cenaCarbo','cenaProt','condimentoCena'];
   for (const k of MEAL_KEYS) {
     const s = selezioni?.[k];
     if (s) { kcal+=s.kcal||0; proteine+=s.p||0; carbo+=s.c||0; grassi+=s.g||0; }
   }
   const pl = selezioni?.pastoLibero;
   if (pl) { kcal+=pl.kcal||0; proteine+=pl.p||0; carbo+=pl.c||0; grassi+=pl.g||0; }
+  const ef = selezioni?.extraFuoriPiano;
+  if (ef) { kcal+=ef.kcal||0; proteine+=ef.p||0; carbo+=ef.c||0; grassi+=ef.g||0; }
   return { kcal, proteine, carbo, grassi };
 };
 
 const mkDefaultState = () => ({
   piano: 'Standard',
-  selezioni: { colazione:null, spuntinoMattina:null, pranzoCarbo:null, pranzoProt:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaCarbo:null, cenaProt:null, pastoLibero:null },
+  selezioni: { colazione:null, spuntinoMattina:null, pranzoCarbo:null, pranzoProt:null, condimentoPranzo:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaCarbo:null, cenaProt:null, condimentoCena:null, pastoLibero:null, extraFuoriPiano:null },
   energia: { bmr:1850, attivo:420 },
+  integratori: {
+    acqua: 0,
+    creatina: false,
+    vitaminaD: false, spirulina: false, omega3: false, multiPrz: false,
+    preWorkout: false,
+    intraWorkout: false,
+  },
   totali: emptyTotali(),
   delta: -2270,
   warningProteine: true,
@@ -174,7 +185,12 @@ const mkDefaultState = () => ({
   timestamp: new Date().toISOString(),
 });
 
-const loadToday = () => readDay(todayKey()) || mkDefaultState();
+const loadToday = () => {
+  const stored = readDay(todayKey());
+  if (!stored) return mkDefaultState();
+  const def = mkDefaultState();
+  return { ...stored, integratori: { ...def.integratori, ...(stored.integratori || {}) } };
+};
 
 const persistState = s => {
   writeDay(todayKey(), s);
@@ -335,10 +351,187 @@ const MealSectionDouble = ({ title, subsections, selezioni, onSelect }) => {
   );
 };
 
+// ── INTEGRATORI COMPONENTS ───────────────────────────────────────
+function IntegratoriSection({ integratori, onChange }) {
+  const [vitOpen, setVitOpen] = React.useState(false);
+
+  const toggle = key => onChange({ ...integratori, [key]: !integratori[key] });
+  const setAcqua = val => onChange({ ...integratori, acqua: val });
+
+  const vitamine = [
+    { key:'vitaminaD', label:'Vitamina D',  dose:'4.000 UI'        },
+    { key:'spirulina', label:'Spirulina',   dose:'3.000 mg'        },
+    { key:'omega3',    label:'Omega 3',     dose:'2.250 mg'        },
+    { key:'multiPrz',  label:'Multi PRZ',   dose:'1 porzione/gg'   },
+  ];
+
+  const vitActive = vitamine.filter(v => integratori[v.key]).length;
+  const hasAny = integratori.creatina || integratori.preWorkout || integratori.intraWorkout ||
+    integratori.vitaminaD || integratori.spirulina || integratori.omega3 || integratori.multiPrz || integratori.acqua > 0;
+
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+
+  const RowToggle = ({ label, sublabel, val, onTog }) => (
+    <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:`1px solid ${BORDER}` }}>
+      <div>
+        <span style={{ fontSize:13, color:MUTED2 }}>{label}</span>
+        {sublabel && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>{sublabel}</div>}
+      </div>
+      <Toggle value={val} onChange={onTog} />
+    </div>
+  );
+
+  return (
+    <div style={{ background:CARD, border:`1px solid ${hasAny ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, overflow:'hidden', transition:'border-color .2s' }}>
+      {/* Section header */}
+      <div style={{ padding:'11px 14px', borderBottom:`1px solid ${BORDER}`, background:CARD2 }}>
+        <BB style={{ fontSize:14, fontWeight:800, color:'#fff' }}>Integratori &amp; Idratazione</BB>
+      </div>
+
+      {/* ACQUA */}
+      <div style={{ padding:'10px 14px', borderBottom:`1px solid ${BORDER}` }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+          <span style={{ fontSize:13, color:MUTED2 }}>Acqua extrapasto (L)</span>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <button onClick={() => setAcqua(Math.max(0, parseFloat((integratori.acqua - 0.5).toFixed(1))))}
+              style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>−</button>
+            <BB style={{ fontSize:20, fontWeight:800, color: integratori.acqua >= 2 ? LIME : '#fff', minWidth:30, textAlign:'center' }}>{Number(integratori.acqua).toFixed(1)}</BB>
+            <button onClick={() => setAcqua(Math.min(5, parseFloat((integratori.acqua + 0.5).toFixed(1))))}
+              style={{ background:'rgba(255,255,255,0.07)', border:'none', color:'#fff', borderRadius:6, width:28, height:28, cursor:'pointer', fontSize:17, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>+</button>
+          </div>
+        </div>
+      </div>
+
+      {/* CREATINA */}
+      <RowToggle
+        label="Creatina"
+        sublabel={integratori.creatina ? `3g standalone${integratori.preWorkout ? ` + 1g pre = ${creatinaTotale}g totali` : ''}` : null}
+        val={integratori.creatina}
+        onTog={() => toggle('creatina')}
+      />
+
+      {/* VITAMINE accordion */}
+      <div style={{ borderBottom:`1px solid ${BORDER}` }}>
+        <div onClick={() => setVitOpen(o => !o)}
+          style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer', userSelect:'none' }}>
+          <span style={{ fontSize:13, color:MUTED2 }}>Vitamine</span>
+          <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+            {vitActive > 0 && <BB style={{ fontSize:10, fontWeight:700, color:LIME }}>{vitActive}/4</BB>}
+            <span style={{ color:MUTED, fontSize:13, display:'inline-block', transform:`rotate(${vitOpen?90:0}deg)`, transition:'transform .2s', lineHeight:1 }}>›</span>
+          </div>
+        </div>
+        {vitOpen && (
+          <div style={{ borderTop:`1px solid ${BORDER}`, padding:'6px 14px 8px' }}>
+            {vitamine.map(v => (
+              <div key={v.key} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                <div>
+                  <span style={{ fontSize:12.5, color: integratori[v.key] ? '#fff' : MUTED2 }}>{v.label}</span>
+                  <span style={{ fontSize:10, color:MUTED, marginLeft:7 }}>{v.dose}</span>
+                </div>
+                <Toggle value={integratori[v.key]} onChange={() => toggle(v.key)} />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* PRE-WORKOUT */}
+      <RowToggle
+        label="Pre-Workout (Big Shot)"
+        sublabel={integratori.preWorkout ? '☕ 160mg · β-ala 1600mg · Crea 1g · Arg 1000mg' : null}
+        val={integratori.preWorkout}
+        onTog={() => toggle('preWorkout')}
+      />
+
+      {/* INTRA-WORKOUT */}
+      <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div>
+          <span style={{ fontSize:13, color:MUTED2 }}>Intra-Workout (Big Shot Intra)</span>
+          {integratori.intraWorkout && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>BCAA 5g · ☕ 100mg · K 331mg · Na 250mg · Mg 167mg</div>}
+        </div>
+        <Toggle value={integratori.intraWorkout} onChange={() => toggle('intraWorkout')} />
+      </div>
+    </div>
+  );
+}
+
+function IntegratoriSummaryCard({ integratori }) {
+  if (!integratori) return null;
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+  const caffeinaTotale = (integratori.preWorkout ? 160 : 0) + (integratori.intraWorkout ? 100 : 0);
+  const vitList = [
+    integratori.vitaminaD && 'Vit D',
+    integratori.spirulina && 'Spirulina',
+    integratori.omega3    && 'Omega 3',
+    integratori.multiPrz  && 'Multi PRZ',
+  ].filter(Boolean);
+  const acquaOk = Number(integratori.acqua) >= 2;
+
+  return (
+    <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'14px 16px', marginBottom:12 }}>
+      <BB style={{ fontSize:11, fontWeight:700, color:MUTED, letterSpacing:'0.07em', display:'block', marginBottom:10 }}>INTEGRATORI &amp; IDRATAZIONE</BB>
+
+      {/* Acqua */}
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: acquaOk ? 8 : 4 }}>
+        <span style={{ fontSize:12, color:MUTED2 }}>Acqua extrapasto</span>
+        <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+          <BB style={{ fontSize:14, fontWeight:700, color: acquaOk ? LIME : ORANGE }}>{Number(integratori.acqua).toFixed(1)} L</BB>
+          <span style={{ fontSize:11 }}>{acquaOk ? '✓' : '⚠'}</span>
+        </div>
+      </div>
+      {!acquaOk && (
+        <div style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.28)`, borderRadius:8, padding:'7px 10px', marginBottom:8, fontSize:11, color:'#FFB070', lineHeight:1.5 }}>
+          Idratazione insufficiente — obiettivo minimo 2 L/giorno
+        </div>
+      )}
+
+      {/* Creatina */}
+      {creatinaTotale > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Creatina totale</span>
+          <BB style={{ fontSize:12, fontWeight:700, color:LIME }}>{creatinaTotale}g</BB>
+        </div>
+      )}
+
+      {/* Caffeina */}
+      {caffeinaTotale > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Caffeina totale</span>
+          <BB style={{ fontSize:12, fontWeight:700, color:BLUE }}>{caffeinaTotale}mg</BB>
+        </div>
+      )}
+
+      {/* Vitamine */}
+      {vitList.length > 0 && (
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+          <span style={{ fontSize:12, color:MUTED2 }}>Vitamine assunte</span>
+          <span style={{ fontSize:11, color:LIME, textAlign:'right', maxWidth:'58%', lineHeight:1.4 }}>{vitList.join(' · ')}</span>
+        </div>
+      )}
+
+      {/* Pre / Intra badges */}
+      <div style={{ display:'flex', gap:8, marginTop:6 }}>
+        {[['Pre-W', integratori.preWorkout], ['Intra-W', integratori.intraWorkout]].map(([l,v]) => (
+          <div key={l} style={{ background: v ? 'rgba(200,245,58,0.1)' : 'rgba(255,255,255,0.05)', border:`1px solid ${v ? 'rgba(200,245,58,0.22)' : BORDER}`, borderRadius:8, padding:'5px 10px', flex:1, textAlign:'center' }}>
+            <BB style={{ fontSize:11, fontWeight:700, color: v ? LIME : MUTED }}>{l}</BB>
+            <div style={{ fontSize:9, color: v ? LIME : MUTED, marginTop:1 }}>{v ? 'Sì' : 'No'}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── SCREEN 1: PIANO ───────────────────────────────────────────────
 function ScreenPiano({ state, setState, days7 }) {
-  const [aiLoading, setAiLoading] = useState(false);
-  const [plTesto, setPlTesto] = useState(state.selezioni.pastoLibero?.desc || '');
+  const [aiLoading,       setAiLoading]       = useState(false);
+  const [plTesto,         setPlTesto]         = useState(state.selezioni.pastoLibero?.desc || '');
+  const [plError,         setPlError]         = useState(false);
+  const [plManualKcal,    setPlManualKcal]    = useState('');
+  const [extraTesto,      setExtraTesto]      = useState(state.selezioni.extraFuoriPiano?.desc || '');
+  const [extraLoading,    setExtraLoading]    = useState(false);
+  const [extraError,      setExtraError]      = useState(false);
+  const [extraManualKcal, setExtraManualKcal] = useState('');
   const plan = MEAL_PLANS[state.piano] || MEAL_PLANS.Standard;
 
   // Count how many other days this week already used pasto libero
@@ -352,29 +545,64 @@ function ScreenPiano({ state, setState, days7 }) {
       if (!opt) return prev;
       const isToggleOff = prev.selezioni[sectionKey]?.opzione === optId;
       const newSel      = isToggleOff ? null : { opzione: optId, kcal: opt.kcal, p: opt.p, c: opt.c, g: opt.g };
-      const next        = rebuildState({ ...prev, selezioni: { ...prev.selezioni, [sectionKey]: newSel } });
+      let newSelezioni  = { ...prev.selezioni, [sectionKey]: newSel };
+      // Auto-clear condimentoCena if cenaProt changes away from E/F/G
+      if (sectionKey === 'cenaProt') {
+        const newId = isToggleOff ? null : optId;
+        if (!['E','F','G'].includes(newId)) newSelezioni.condimentoCena = null;
+      }
+      const next = rebuildState({ ...prev, selezioni: newSelezioni });
       persistState(next);
       return next;
     });
   };
 
+  const callNutriAI = async (description) => {
+    const res = await fetch('/api/ai', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ description }) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (typeof data.kcal !== 'number') throw new Error('Invalid JSON response');
+    return { kcal: data.kcal||0, p: data.proteine||0, c: data.carboidrati||0, g: data.grassi||0 };
+  };
+
   const handleAI = async () => {
     if (!plTesto.trim() || aiLoading) return;
     setAiLoading(true);
+    setPlError(false);
+    setPlManualKcal('');
     try {
-      const res  = await fetch('/api/ai', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ description: plTesto }) });
-      const data = res.ok ? await res.json() : { kcal:420, proteine:22, carboidrati:45, grassi:14 };
-      const plSel = { desc: plTesto, kcal: data.kcal||0, p: data.proteine||0, c: data.carboidrati||0, g: data.grassi||0 };
-      setState(prev => {
-        const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } });
-        persistState(next);
-        return next;
-      });
-    } catch {
-      const plSel = { desc: plTesto, kcal:420, p:22, c:45, g:14 };
+      const macros = await callNutriAI(plTesto);
+      const plSel  = { desc: plTesto, ...macros };
       setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } }); persistState(next); return next; });
-    }
+    } catch { setPlError(true); }
     setAiLoading(false);
+  };
+
+  const handlePlManual = () => {
+    const k    = Math.max(0, parseInt(plManualKcal) || 0);
+    const plSel = { desc: plTesto, kcal: k, p: 0, c: 0, g: 0 };
+    setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, pastoLibero: plSel } }); persistState(next); return next; });
+    setPlError(false); setPlManualKcal('');
+  };
+
+  const handleExtraAI = async () => {
+    if (!extraTesto.trim() || extraLoading) return;
+    setExtraLoading(true);
+    setExtraError(false);
+    setExtraManualKcal('');
+    try {
+      const macros = await callNutriAI(extraTesto);
+      const efSel  = { desc: extraTesto, ...macros };
+      setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, extraFuoriPiano: efSel } }); persistState(next); return next; });
+    } catch { setExtraError(true); }
+    setExtraLoading(false);
+  };
+
+  const handleExtraManual = () => {
+    const k    = Math.max(0, parseInt(extraManualKcal) || 0);
+    const efSel = { desc: extraTesto, kcal: k, p: 0, c: 0, g: 0 };
+    setState(prev => { const next = rebuildState({ ...prev, selezioni: { ...prev.selezioni, extraFuoriPiano: efSel } }); persistState(next); return next; });
+    setExtraError(false); setExtraManualKcal('');
   };
 
   const setPiano = id => setState(prev => {
@@ -433,6 +661,7 @@ function ScreenPiano({ state, setState, days7 }) {
           { label:'Carboidrati', selKey:'pranzoCarbo',  options:plan.pranzoCarbo  },
           { label:'Proteine',    selKey:'pranzoProt',   options:plan.pranzoProt   },
         ]} selezioni={state.selezioni} onSelect={onSelect} />
+        <MealSection title="Condimento pranzo" selKey="condimentoPranzo" options={plan.condimentoPranzo} selezioni={state.selezioni} onSelect={onSelect} />
         <MealSection title="Spuntino pomeriggio" selKey="spuntinoPomeriggio" options={plan.spuntinoPomeriggio} selezioni={state.selezioni} onSelect={onSelect} />
 
         {/* Monday double training toggle */}
@@ -448,6 +677,9 @@ function ScreenPiano({ state, setState, days7 }) {
           { label:'Carboidrati', selKey:'cenaCarbo', options:plan.cenaCarbo },
           { label:'Proteine',    selKey:'cenaProt',  options:plan.cenaProt  },
         ]} selezioni={state.selezioni} onSelect={onSelect} />
+        {['E','F','G'].includes(state.selezioni.cenaProt?.opzione) && (
+          <MealSection title="Condimento cena" selKey="condimentoCena" options={plan.condimentoCena} selezioni={state.selezioni} onSelect={onSelect} />
+        )}
 
         {/* Pasto libero */}
         <div style={{ background:CARD, border:`1px solid ${state.selezioni.pastoLibero ? 'rgba(200,245,58,0.15)' : BORDER}`, borderRadius:12, marginBottom:8, padding:14, transition:'border-color .2s' }}>
@@ -466,7 +698,7 @@ function ScreenPiano({ state, setState, days7 }) {
             </div>
           )}
 
-          <textarea value={plTesto} onChange={e => setPlTesto(e.target.value)}
+          <textarea value={plTesto} onChange={e => { setPlTesto(e.target.value); setPlError(false); }}
             placeholder="Descrivi il tuo pasto…"
             style={{ width:'100%', background:'rgba(255,255,255,0.04)', border:`1px solid ${BORDER}`, borderRadius:8, fontSize:13, padding:'10px 12px', resize:'none', outline:'none', height:62, lineHeight:1.4 }} />
 
@@ -474,6 +706,21 @@ function ScreenPiano({ state, setState, days7 }) {
             style={{ marginTop:8, width:'100%', background: plTesto.trim() ? LIME : 'rgba(200,245,58,0.18)', border:'none', borderRadius:8, padding:'9px', cursor: plTesto.trim() && !aiLoading ? 'pointer' : 'default', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', transition:'all .2s' }}>
             {aiLoading ? <span style={{ animation:'pls 1s infinite' }}>Analisi in corso…</span> : 'Stima con AI →'}
           </button>
+
+          {/* Error state: show manual kcal input */}
+          {plError && (
+            <div style={{ marginTop:8, background:'rgba(255,68,68,0.08)', border:`1px solid rgba(255,68,68,0.28)`, borderRadius:8, padding:'10px 12px' }}>
+              <div style={{ fontSize:11, color:'#FF8080', marginBottom:8, lineHeight:1.5 }}>Calcolo non disponibile — inserisci le kcal manualmente</div>
+              <div style={{ display:'flex', gap:8 }}>
+                <input type="number" min="0" value={plManualKcal} onChange={e => setPlManualKcal(e.target.value)} placeholder="es. 350"
+                  style={{ flex:1, background:'rgba(255,255,255,0.07)', border:`1px solid rgba(255,255,255,0.15)`, borderRadius:8, color:'#fff', fontSize:14, padding:'8px 10px', outline:'none' }} />
+                <button onClick={handlePlManual} disabled={!plManualKcal}
+                  style={{ background: plManualKcal ? LIME : 'rgba(200,245,58,0.2)', border:'none', borderRadius:8, padding:'8px 16px', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', cursor: plManualKcal ? 'pointer' : 'default' }}>
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
 
           {state.selezioni.pastoLibero && (
             <div style={{ marginTop:8, background:'rgba(200,245,58,0.07)', border:`1px solid rgba(200,245,58,0.18)`, borderRadius:8, padding:'10px 12px', display:'flex', gap:16, flexWrap:'wrap' }}>
@@ -486,6 +733,54 @@ function ScreenPiano({ state, setState, days7 }) {
             </div>
           )}
         </div>
+
+        {/* Extra fuori piano */}
+        <div style={{ background:'#0D0D10', border:`1px dashed ${state.selezioni.extraFuoriPiano ? 'rgba(200,245,58,0.25)' : 'rgba(255,255,255,0.14)'}`, borderRadius:12, marginBottom:8, padding:14, transition:'border-color .2s' }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:6 }}>
+            <div>
+              <BB style={{ fontSize:14, fontWeight:800, color:'#fff' }}>Extra fuori piano</BB>
+              <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>Non esportato su Notion</div>
+            </div>
+            {state.selezioni.extraFuoriPiano
+              ? <BB style={{ fontSize:11, fontWeight:700, color:MUTED2 }}>{state.selezioni.extraFuoriPiano.kcal} kcal</BB>
+              : <span style={{ fontSize:11, color:MUTED }}>facoltativo</span>}
+          </div>
+
+          <textarea value={extraTesto} onChange={e => { setExtraTesto(e.target.value); setExtraError(false); }}
+            placeholder="es. 2 mele, 1 caffè con zucchero, 1 biscotto…"
+            style={{ width:'100%', background:'rgba(255,255,255,0.03)', border:`1px solid rgba(255,255,255,0.09)`, borderRadius:8, fontSize:13, padding:'10px 12px', resize:'none', outline:'none', height:56, lineHeight:1.4 }} />
+
+          <button onClick={handleExtraAI} disabled={extraLoading || !extraTesto.trim()}
+            style={{ marginTop:8, width:'100%', background: extraTesto.trim() ? 'rgba(200,245,58,0.15)' : 'rgba(255,255,255,0.05)', border:`1px solid ${extraTesto.trim() ? 'rgba(200,245,58,0.3)' : 'rgba(255,255,255,0.1)'}`, borderRadius:8, padding:'9px', cursor: extraTesto.trim() && !extraLoading ? 'pointer' : 'default', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color: extraTesto.trim() ? LIME : MUTED, transition:'all .2s' }}>
+            {extraLoading ? <span style={{ animation:'pls 1s infinite' }}>Analisi in corso…</span> : 'Stima con AI →'}
+          </button>
+
+          {extraError && (
+            <div style={{ marginTop:8, background:'rgba(255,68,68,0.08)', border:`1px solid rgba(255,68,68,0.28)`, borderRadius:8, padding:'10px 12px' }}>
+              <div style={{ fontSize:11, color:'#FF8080', marginBottom:8, lineHeight:1.5 }}>Calcolo non disponibile — inserisci le kcal manualmente</div>
+              <div style={{ display:'flex', gap:8 }}>
+                <input type="number" min="0" value={extraManualKcal} onChange={e => setExtraManualKcal(e.target.value)} placeholder="es. 180"
+                  style={{ flex:1, background:'rgba(255,255,255,0.07)', border:`1px solid rgba(255,255,255,0.15)`, borderRadius:8, color:'#fff', fontSize:14, padding:'8px 10px', outline:'none' }} />
+                <button onClick={handleExtraManual} disabled={!extraManualKcal}
+                  style={{ background: extraManualKcal ? LIME : 'rgba(200,245,58,0.2)', border:'none', borderRadius:8, padding:'8px 16px', fontFamily:"'Barlow Condensed'", fontSize:14, fontWeight:700, color:'#000', cursor: extraManualKcal ? 'pointer' : 'default' }}>
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
+
+          {state.selezioni.extraFuoriPiano && (
+            <div style={{ marginTop:8, background:'rgba(255,255,255,0.04)', border:`1px solid rgba(255,255,255,0.08)`, borderRadius:8, padding:'10px 12px', display:'flex', gap:16, flexWrap:'wrap' }}>
+              {[['Kcal',state.selezioni.extraFuoriPiano.kcal,''],['Prot',state.selezioni.extraFuoriPiano.p,'g'],['Carb',state.selezioni.extraFuoriPiano.c,'g'],['Grassi',state.selezioni.extraFuoriPiano.g,'g']].map(([l,v,u]) => (
+                <div key={l}>
+                  <div style={{ fontSize:9, color:MUTED }}>{l}</div>
+                  <BB style={{ fontSize:19, fontWeight:800, color:MUTED2 }}>{v}<span style={{ fontSize:10, color:MUTED }}>{u}</span></BB>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div style={{ height:8 }} />
       </div>
 
@@ -592,6 +887,9 @@ function ScreenDelta({ state, setState }) {
           <MacroBar label="Grassi"      grams={grassi}   maxGrams={90}  color={ORANGE} delay={120} />
         </div>
 
+        {/* Integratori summary */}
+        <IntegratoriSummaryCard integratori={state.integratori} />
+
         {/* Warning proteine */}
         {warningProteine && (
           <div className="afu" style={{ background:'rgba(255,124,42,0.1)', border:`1px solid rgba(255,124,42,0.3)`, borderRadius:12, padding:'12px 16px', marginBottom:12, display:'flex', alignItems:'flex-start', gap:10 }}>
@@ -665,6 +963,7 @@ function ScreenDashboard({ days7 }) {
     let surplus=0, deficit=0, warnProt=0, pastoLibero=0;
     const pianoCounts = { Standard:0, Riposo:0, Bulk:0 };
     let deltaCount=0;
+    let sumAcqua=0, acquaCount=0, giorniCreatina=0, giorniPreW=0, giorniIntraW=0, giorniVitamine=0, sumCaffeinaW=0, caffeinaWCount=0;
 
     for (const r of records) {
       const t = r.totali || emptyTotali();
@@ -679,6 +978,16 @@ function ScreenDashboard({ days7 }) {
         deltaCount++;
         if (d >= 0) surplus++; else deficit++;
       }
+      const intr = r.integratori;
+      if (intr) {
+        sumAcqua += Number(intr.acqua) || 0; acquaCount++;
+        if (intr.creatina || intr.preWorkout) giorniCreatina++;
+        if (intr.preWorkout)   giorniPreW++;
+        if (intr.intraWorkout) giorniIntraW++;
+        if (intr.vitaminaD || intr.spirulina || intr.omega3 || intr.multiPrz) giorniVitamine++;
+        const caf = (intr.preWorkout ? 160 : 0) + (intr.intraWorkout ? 100 : 0);
+        if (caf > 0) { sumCaffeinaW += caf; caffeinaWCount++; }
+      }
     }
 
     const avgKcal  = Math.round(sumKcal / loggati);
@@ -688,6 +997,10 @@ function ScreenDashboard({ days7 }) {
 
     const pianoStr = `Standard (${pianoCounts.Standard}gg) / Riposo (${pianoCounts.Riposo}gg) / Bulk (${pianoCounts.Bulk}gg)`;
     const bestPiano = Object.entries(pianoCounts).sort((a,b) => b[1]-a[1]).find(([,v]) => v > 0)?.[0] || '—';
+
+    const avgAcqua       = acquaCount ? (sumAcqua / acquaCount).toFixed(1) : 'N/D';
+    const complianceVit  = loggati ? Math.round((giorniVitamine / loggati) * 100) : 0;
+    const caffeinaMedia  = caffeinaWCount ? Math.round(sumCaffeinaW / caffeinaWCount) : 0;
 
     const text = [
       'SALVA_NUTRIZIONE_MENSILE',
@@ -702,6 +1015,13 @@ function ScreenDashboard({ days7 }) {
       `Piano Prevalente: ${pianoStr}`,
       `Giorni Pasto Libero: ${pastoLibero}`,
       `Consistency: ${consistency}%`,
+      `--- Integratori & Idratazione ---`,
+      `Acqua Media: ${avgAcqua}L/gg`,
+      `Giorni Creatina: ${giorniCreatina}/${loggati}`,
+      `Giorni Pre-Workout: ${giorniPreW}/${loggati}`,
+      `Giorni Intra-Workout: ${giorniIntraW}/${loggati}`,
+      `Compliance Vitamine: ${complianceVit}%`,
+      `Caffeina Media (gg workout): ${caffeinaMedia}mg`,
     ].join('\n');
 
     return { text, loggati, daysInMonth, avgKcal, avgDeltaM, surplus, deficit, avgProt, warnProt, pianoStr, pastoLibero, consistency, bestPiano };
@@ -840,43 +1160,66 @@ function ScreenFrequenza({ state, days7 }) {
   const [notionModal, setNotionModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Rolling 7-day protein frequency
+  // Current week days (Mon → today), resets every Monday at midnight
+  const weekDays = useMemo(() => {
+    const today = new Date();
+    const dow = today.getDay(); // 0=Sun
+    const mondayOffset = dow === 0 ? -6 : 1 - dow;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + mondayOffset);
+    monday.setHours(0, 0, 0, 0);
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(monday);
+      d.setDate(monday.getDate() + i);
+      if (d > today) break;
+      days.push({ date: d.toISOString().split('T')[0], data: readDay(dateKey(d)) });
+    }
+    return days;
+  }, []);
+
+  // Count unique days per protein ID (pranzo OR cena in same day = 1, not 2)
   const protCounts = {};
-  days7.forEach(d => {
+  weekDays.forEach(d => {
     if (!d.data?.selezioni) return;
+    const seenToday = new Set();
     ['pranzoProt','cenaProt'].forEach(k => {
       const sel = d.data.selezioni[k]?.opzione;
-      if (sel) protCounts[sel] = (protCounts[sel]||0) + 1;
+      if (sel && !seenToday.has(sel)) {
+        seenToday.add(sel);
+        protCounts[sel] = (protCounts[sel]||0) + 1;
+      }
     });
   });
-  const salmonCount = protCounts['F'] || 0;
 
-  const PROT_INFO = {
-    A: { emoji:'🥩', name:'Bresaola / Tacchino / Pollo', max:7 },
-    B: { emoji:'🍗', name:'Carne bianca',                max:6 },
-    C: { emoji:'🥩', name:'Carne rossa',                 max:2 },
-    D: { emoji:'🐟', name:'Pesce bianco',                max:5 },
-    E: { emoji:'🥚', name:'Uova + albume',               max:7 },
-    F: { emoji:'🐡', name:'Salmone / Tonno / Spada',     max:1 },
-    G: { emoji:'🫙', name:'Formaggi freschi',            max:4 },
-    H: { emoji:'🌿', name:'Legumi',                      max:5 },
-    I: { emoji:'🌱', name:'Tempeh',                      max:4 },
+  // All 9 categories ordered as requested, each with min + max
+  const PROT_INFO = [
+    { id:'C', emoji:'🥩', name:'Carne rossa',     min:1, max:2 },
+    { id:'B', emoji:'🍗', name:'Carne bianca',     min:2, max:4 },
+    { id:'H', emoji:'🌿', name:'Legumi',           min:3, max:7 },
+    { id:'D', emoji:'🐟', name:'Pesce bianco',     min:2, max:5 },
+    { id:'G', emoji:'🫙', name:'Formaggi freschi', min:1, max:3 },
+    { id:'A', emoji:'🥗', name:'Salumi',           min:1, max:3 },
+    { id:'E', emoji:'🥚', name:'Uova',             min:1, max:3 },
+    { id:'F', emoji:'🐡', name:'Pesce grasso',     min:0, max:1 },
+    { id:'I', emoji:'🌱', name:'Tempeh',           min:1, max:2 },
+  ];
+
+  const getStatus = (id, count, min, max) => {
+    if (count > max) return 'danger';
+    if (min === 0) return 'ok'; // pesce grasso: no min → always ok if ≤ max
+    if (count >= min) return 'ok';
+    return 'warn'; // 0 or below min (but not above max)
   };
 
-  const freqItems = Object.entries(PROT_INFO).map(([id, info]) => {
-    const count = protCounts[id] || 0;
-    let status  = 'ok';
-    if (id === 'F') {
-      status = count > 1 ? 'danger' : count === 1 ? 'warn' : 'ok';
-    } else {
-      const ratio = count / info.max;
-      status = ratio > 1 ? 'danger' : ratio >= 0.65 ? 'warn' : 'ok';
-    }
-    return { ...info, id, count, status };
-  }).filter(item => item.count > 0 || item.id === 'F');
+  const freqItems = PROT_INFO.map(info => {
+    const count = protCounts[info.id] || 0;
+    const status = getStatus(info.id, count, info.min, info.max);
+    return { ...info, count, status };
+  });
 
   const sc = s => s==='ok' ? LIME : s==='warn' ? ORANGE : DANGER;
-  const sl = s => s==='ok' ? 'OK' : s==='warn' ? 'Presente' : 'Limite!';
+  const sl = s => s==='ok' ? 'Nel range' : s==='warn' ? 'Sotto il min' : 'Oltre limite';
 
   // Generate SALVA_NUTRIZIONE export text
   const { piano, energia, selezioni, totali, delta } = state;
@@ -884,6 +1227,9 @@ function ScreenFrequenza({ state, days7 }) {
   const attivo  = Number(energia?.attivo) || 0;
   const consumate = bmr + attivo;
   const now     = new Date();
+  const intr = state.integratori || mkDefaultState().integratori;
+  const creatinaTotaleExport = (intr.creatina ? 3 : 0) + (intr.preWorkout ? 1 : 0);
+  const caffeinaTotaleExport = (intr.preWorkout ? 160 : 0) + (intr.intraWorkout ? 100 : 0);
   const notionText = [
     'SALVA_NUTRIZIONE',
     `Data: ${todayDate()}`,
@@ -898,6 +1244,15 @@ function ScreenFrequenza({ state, days7 }) {
     `Pasto Libero: ${selezioni.pastoLibero ? 'Sì' : 'No'}`,
     `Note Pasto Libero: ${selezioni.pastoLibero?.desc || ''}`,
     `Mese Report: ${MONTHS_IT[now.getMonth()]} ${now.getFullYear()}`,
+    `--- Integratori & Idratazione ---`,
+    `acqua_extrapasto_litri: ${Number(intr.acqua).toFixed(1)}${Number(intr.acqua) < 2 ? ' ⚠' : ' ✓'}`,
+    `creatina_standalone_g: ${intr.creatina ? 3 : 0}`,
+    `creatina_pre_g: ${intr.preWorkout ? 1 : 0}`,
+    `creatina_totale_g: ${creatinaTotaleExport}`,
+    `vitamine: vitamina_d=${intr.vitaminaD}, spirulina=${intr.spirulina}, omega3=${intr.omega3}, multi_prz=${intr.multiPrz}`,
+    `pre_workout: assunto=${intr.preWorkout}, caffeina_mg=160, beta_alanina_mg=1600, creatina_g=1, arginina_mg=1000`,
+    `intra_workout: assunto=${intr.intraWorkout}, bcaa_g=5, caffeina_mg=100, potassio_mg=331, sodio_mg=250, magnesio_mg=167`,
+    `caffeina_totale_mg: ${caffeinaTotaleExport}`,
   ].join('\n');
 
   const handleCopy = () => {
@@ -915,7 +1270,7 @@ function ScreenFrequenza({ state, days7 }) {
       <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
         {/* Legend */}
         <div style={{ display:'flex', gap:14, marginBottom:12 }}>
-          {[['OK',LIME],['Presente',ORANGE],['Limite',DANGER]].map(([l,c]) => (
+          {[['Nel range',LIME],['Sotto il min',ORANGE],['Oltre limite',DANGER]].map(([l,c]) => (
             <div key={l} style={{ display:'flex', alignItems:'center', gap:4 }}>
               <div style={{ width:6, height:6, borderRadius:'50%', background:c }} />
               <span style={{ fontSize:10, color:MUTED }}>{l}</span>
@@ -923,47 +1278,35 @@ function ScreenFrequenza({ state, days7 }) {
           ))}
         </div>
 
-        {/* Frequency table */}
-        {freqItems.length > 0 ? (
-          <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, overflow:'hidden', marginBottom:12 }}>
-            <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 80px', padding:'8px 14px', borderBottom:`1px solid ${BORDER}`, background:CARD2 }}>
-              {['Alimento','Freq.','Stato'].map((h,i) => (
-                <span key={h} style={{ fontSize:9, color:MUTED, textTransform:'uppercase', letterSpacing:'0.07em', textAlign:i===1?'center':i===2?'right':'left' }}>{h}</span>
-              ))}
-            </div>
-            {freqItems.map((item,i) => (
-              <div key={item.id}>
-                {i > 0 && <div style={{ borderTop:`1px solid ${BORDER}`, margin:'0 14px' }} />}
-                <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 80px', padding:'9px 14px', alignItems:'center' }}>
-                  <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-                    <span style={{ fontSize:16 }}>{item.emoji}</span>
-                    <div>
-                      <div style={{ fontSize:12, fontWeight:500, lineHeight:1.2 }}>{item.name}</div>
-                      <div style={{ fontSize:9, color:MUTED }}>max {item.max}×/sett</div>
-                    </div>
-                  </div>
-                  <BB style={{ fontSize:22, fontWeight:900, color:sc(item.status), textAlign:'center' }}>{item.count}</BB>
-                  <div style={{ display:'flex', alignItems:'center', gap:4, justifyContent:'flex-end' }}>
-                    <div style={{ width:6, height:6, borderRadius:'50%', background:sc(item.status), flexShrink:0 }} />
-                    <span style={{ fontSize:10, color:sc(item.status), textAlign:'right', lineHeight:1.3 }}>{sl(item.status)}</span>
-                  </div>
-                </div>
-              </div>
+        {/* Frequency table — always show all 9 categories */}
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, overflow:'hidden', marginBottom:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 90px', padding:'8px 14px', borderBottom:`1px solid ${BORDER}`, background:CARD2 }}>
+            {['Alimento','Freq.','Stato'].map((h,i) => (
+              <span key={h} style={{ fontSize:9, color:MUTED, textTransform:'uppercase', letterSpacing:'0.07em', textAlign:i===1?'center':i===2?'right':'left' }}>{h}</span>
             ))}
           </div>
-        ) : (
-          <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, padding:'20px', textAlign:'center', marginBottom:12 }}>
-            <span style={{ fontSize:12, color:MUTED }}>Nessun dato questa settimana — seleziona i pasti dal Piano</span>
-          </div>
-        )}
-
-        {/* Salmon over-limit banner */}
-        {salmonCount > 1 && (
-          <div style={{ background:'rgba(255,68,68,0.1)', border:`1px solid rgba(255,68,68,0.3)`, borderRadius:12, padding:'10px 14px', marginBottom:12, display:'flex', alignItems:'center', gap:8 }}>
-            <span style={{ fontSize:16 }}>🔴</span>
-            <span style={{ fontSize:12, color:'#FF8080', lineHeight:1.5 }}>Pesce grasso (salmone/tonno/spada) superato: {salmonCount}× questa settimana — limite 1×</span>
-          </div>
-        )}
+          {freqItems.map((item,i) => (
+            <div key={item.id}>
+              {i > 0 && <div style={{ borderTop:`1px solid ${BORDER}`, margin:'0 14px' }} />}
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 46px 90px', padding:'9px 14px', alignItems:'center' }}>
+                <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                  <span style={{ fontSize:16 }}>{item.emoji}</span>
+                  <div>
+                    <div style={{ fontSize:12, fontWeight:500, lineHeight:1.2 }}>{item.name}</div>
+                    <div style={{ fontSize:9, color:MUTED }}>
+                      {item.min === 0 ? `max ${item.max}×/sett` : `${item.min}–${item.max}×/sett`}
+                    </div>
+                  </div>
+                </div>
+                <BB style={{ fontSize:22, fontWeight:900, color:sc(item.status), textAlign:'center' }}>{item.count}</BB>
+                <div style={{ display:'flex', alignItems:'center', gap:4, justifyContent:'flex-end' }}>
+                  <div style={{ width:6, height:6, borderRadius:'50%', background:sc(item.status), flexShrink:0 }} />
+                  <span style={{ fontSize:10, color:sc(item.status), textAlign:'right', lineHeight:1.3 }}>{sl(item.status)}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
         <div style={{ height:8 }} />
       </div>
 
@@ -1000,20 +1343,49 @@ function ScreenFrequenza({ state, days7 }) {
   );
 }
 
+// ── SCREEN: HYDRO & INT ──────────────────────────────────────────
+function ScreenIntegratori({ state, setState }) {
+  const setIntegratori = intr => setState(prev => {
+    const next = { ...prev, integratori: intr, timestamp: new Date().toISOString() };
+    persistState(next);
+    return next;
+  });
+
+  const intr = state.integratori || mkDefaultState().integratori;
+
+  return (
+    <div style={{ display:'flex', flexDirection:'column', height:'100%' }}>
+      <div style={{ padding:'14px 20px 10px', flexShrink:0 }}>
+        <BB style={{ fontSize:24, fontWeight:900, letterSpacing:'0.02em' }}>
+          <span style={{ color:'#fff' }}>HYDRO</span><span style={{ color:LIME }}>&amp;INT</span>
+        </BB>
+        <div style={{ fontSize:12, color:MUTED, marginTop:2 }}>Integratori &amp; Idratazione giornalieri</div>
+      </div>
+      <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
+        <IntegratoriSection integratori={intr} onChange={setIntegratori} />
+        <IntegratoriSummaryCard integratori={intr} />
+        <div style={{ height:8 }} />
+      </div>
+    </div>
+  );
+}
+
 // ── BOTTOM NAV ICONS ─────────────────────────────────────────────
 function NavIcon({ id, active }) {
   const c = active ? LIME : 'rgba(255,255,255,0.38)';
   if (id===0) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5" fill={c}/></svg>;
-  if (id===1) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3L21.5 20H2.5L12 3Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="17" r="1.1" fill={c}/></svg>;
-  if (id===2) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="3,17 8,11 13,14 21,6" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="20" x2="21" y2="20" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  if (id===1) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3.5C12 3.5 5 11.5 5 15.5a7 7 0 0 0 14 0c0-4-7-12-7-12Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round" fill="none"/><path d="M9 17c0 1.66 1.34 3 3 3" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
+  if (id===2) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3L21.5 20H2.5L12 3Z" stroke={c} strokeWidth="1.8" strokeLinejoin="round"/><line x1="12" y1="9.5" x2="12" y2="14" stroke={c} strokeWidth="1.8" strokeLinecap="round"/><circle cx="12" cy="17" r="1.1" fill={c}/></svg>;
+  if (id===3) return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="3,17 8,11 13,14 21,6" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><line x1="3" y1="20" x2="21" y2="20" stroke={c} strokeWidth="1.5" strokeLinecap="round"/></svg>;
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="16" rx="2" stroke={c} strokeWidth="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke={c} strokeWidth="1.5"/><line x1="9" y1="4" x2="9" y2="9" stroke={c} strokeWidth="1.5"/><line x1="15" y1="4" x2="15" y2="9" stroke={c} strokeWidth="1.5"/><circle cx="8" cy="14" r="1.5" fill={c}/><circle cx="12" cy="14" r="1.5" fill={c}/><circle cx="16" cy="14" r="1.5" fill={c}/></svg>;
 }
 
 const NAV = [
   { id:0, label:'Piano'     },
-  { id:1, label:'Delta Cal' },
-  { id:2, label:'Dashboard' },
-  { id:3, label:'Frequenza' },
+  { id:1, label:'Hydro&Int' },
+  { id:2, label:'Delta Cal' },
+  { id:3, label:'Dashboard' },
+  { id:4, label:'Frequenza' },
 ];
 
 // ── ROOT APP ─────────────────────────────────────────────────────
@@ -1050,10 +1422,11 @@ function NutriTrack() {
 
       {/* Screen */}
       <div key={navKey} className={dir} style={{ flex:1, overflow:'hidden', minHeight:0 }}>
-        {tab===0 && <ScreenPiano      state={appState} setState={setAppState} days7={days7} />}
-        {tab===1 && <ScreenDelta      state={appState} setState={setAppState} />}
-        {tab===2 && <ScreenDashboard  days7={days7} />}
-        {tab===3 && <ScreenFrequenza  state={appState} days7={days7} />}
+        {tab===0 && <ScreenPiano         state={appState} setState={setAppState} days7={days7} />}
+        {tab===1 && <ScreenIntegratori  state={appState} setState={setAppState} />}
+        {tab===2 && <ScreenDelta        state={appState} setState={setAppState} />}
+        {tab===3 && <ScreenDashboard    days7={days7} />}
+        {tab===4 && <ScreenFrequenza    state={appState} days7={days7} />}
       </div>
 
       {/* Bottom nav */}
