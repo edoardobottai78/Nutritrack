@@ -199,20 +199,20 @@ const CB_RIP_C_OP3 = [
 const PROT_CARNE = [
   { id:'A', desc:'Petto di pollo 150g',              kcal:165, p:35, c:0, g:2 },
   { id:'B', desc:'Fesa di tacchino 150g',            kcal:161, p:36, c:0, g:1 },
-  { id:'C', desc:'Macinato vitello 180g ⚠ MAX 1×/sett', kcal:284, p:36, c:0, g:15, maxPerWeek:1 },
-  { id:'D', desc:'Bistecca manzo 160g ⚠ MAX 1×/sett',   kcal:296, p:32, c:0, g:18, maxPerWeek:1 },
+  { id:'C', desc:'Macinato vitello 180g ⚠ MAX 1×/sett', kcal:225, p:36, c:0, g:9,  maxPerWeek:1 },
+  { id:'D', desc:'Bistecca manzo 160g ⚠ MAX 1×/sett',   kcal:206, p:34, c:0, g:8,  maxPerWeek:1 },
   { id:'E', desc:'Bresaola 110g',                    kcal:166, p:36, c:0, g:2 },
-  { id:'F', desc:'Hamburger 190g ⚠ MAX 1×/sett',    kcal:361, p:38, c:0, g:23, maxPerWeek:1 },
+  { id:'F', desc:'Hamburger 190g ⚠ MAX 1×/sett',    kcal:289, p:38, c:0, g:15, maxPerWeek:1 },
 ];
 // Proteine Pesce (Op2)
 const PROT_PESCE = [
   { id:'A', desc:'Merluzzo 200g',                    kcal:164, p:38, c:0, g:1 },
-  { id:'B', desc:'Salmone 180g ⚠ MAX 1×/sett',      kcal:256, p:36, c:0, g:11, maxPerWeek:1 },
+  { id:'B', desc:'Salmone 180g ⚠ MAX 1×/sett',      kcal:327, p:33, c:0, g:22, maxPerWeek:1 },
   { id:'C', desc:'Platessa 200g',                    kcal:138, p:30, c:0, g:2 },
-  { id:'D', desc:'Gamberetti 250g',                  kcal:225, p:47, c:0, g:4 },
-  { id:'E', desc:'Orata 160g',                       kcal:136, p:29, c:0, g:2 },
+  { id:'D', desc:'Gamberetti 250g',                  kcal:150, p:34, c:0, g:2 },
+  { id:'E', desc:'Orata 160g',                       kcal:188, p:33, c:0, g:6 },
   { id:'F', desc:'Pesce spada 200g ⚠ MAX 1×/sett',  kcal:218, p:40, c:0, g:6,  maxPerWeek:1 },
-  { id:'G', desc:'Polpo 320g',                       kcal:218, p:48, c:3, g:3 },
+  { id:'G', desc:'Polpo 320g',                       kcal:175, p:34, c:3, g:3 },
   { id:'H', desc:'Seppia 240g',                      kcal:163, p:38, c:1, g:1 },
   { id:'I', desc:'Sogliola 200g',                    kcal:146, p:31, c:0, g:2 },
   { id:'J', desc:'Tonno in olio sgocciolato 104g ⚠ MAX 1×/sett', kcal:239, p:26, c:0, g:15, maxPerWeek:1 },
@@ -228,7 +228,7 @@ const PROT_LEGUMI = [
 ];
 
 // Op4 Fiocchi fisso (verdure già incluse nella scelta carbo)
-const FIXED_FIOCCHI = { desc:'Fiocchi di latte protein 250g', kcal:250, p:30, c:8, g:12 };
+const FIXED_FIOCCHI = { desc:'Fiocchi di latte protein 250g', kcal:172, p:30, c:7.5, g:2.5 };
 // Op5 Uova fisso (verdure già incluse nella scelta carbo)
 const FIXED_UOVA    = { desc:'2 uova (110g) + albume 150g', kcal:221, p:31, c:2, g:12 };
 
@@ -318,7 +318,7 @@ const MEAL_PLANS = {
 
   BulkRiposo: {
     colazione: COLAZIONE_BULK,
-    spuntinoMattina: SPUNTINO_BASE,
+    spuntinoMattina: SP_POMERIGGIO_BULK,
     pranzoOps: [
       { id:'Op1', label:'🥩 Carne',             carbs: CB_RIP_P,      prots: PROT_CARNE  },
       { id:'Op2', label:'🐟 Pesce',             carbs: CB_RIP_P,      prots: PROT_PESCE  },
