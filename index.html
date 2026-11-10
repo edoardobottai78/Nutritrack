@@ -62,6 +62,23 @@ const PROT_BASE = [
 const PROT_CENA = [...PROT_BASE,
   { id:'I', desc:'90g tempeh', kcal:170, p:17, c:8, g:10 },
 ];
+const PROT_BULK_BASE = [
+  { id:'A', desc:'100g bresaola / arrosto tacchino / arrosto pollo',         kcal:110, p:23, c:1,  g:2  },
+  { id:'B', desc:'150g carne bianca',                                         kcal:165, p:35, c:0,  g:3  },
+  { id:'C', desc:'120g carne rossa',                                          kcal:180, p:26, c:0,  g:8  },
+  { id:'D', desc:'200g pesce bianco',                                         kcal:180, p:40, c:0,  g:2  },
+  { id:'E', desc:'2 uova + 100ml albume',                                     kcal:195, p:23, c:2,  g:10 },
+  { id:'F', desc:'150g salmone / pesce spada / tonno [MAX 1×/sett]',          kcal:250, p:30, c:0,  g:14, maxPerWeek:1 },
+  { id:'G', desc:'150g formaggi freschi (fiocchi latte)',                     kcal:150, p:18, c:5,  g:7  },
+  { id:'H', desc:'150g legumi cotti o 50g secco',                             kcal:160, p:11, c:25, g:1  },
+  { id:'I', desc:'100g legumi cotti + 100g carne bianca',                     kcal:270, p:31, c:17, g:4  },
+  { id:'J', desc:'100g legumi cotti + 1 scatoletta tonno sgocciolato (80g)',  kcal:230, p:30, c:17, g:2  },
+  { id:'K', desc:'100g legumi cotti + 50g formaggio fresco (es. feta light)', kcal:205, p:18, c:22, g:7  },
+];
+const PROT_BULK_CENA = [
+  ...PROT_BULK_BASE,
+  { id:'L', desc:'90g tempeh', kcal:170, p:17, c:8, g:10 },
+];
 const SPUNTINO_BASE = [
   { id:'A', desc:'150g frutta stagione + 20g cioccolato fondente',   kcal:185, p:2, c:23, g:10 },
   { id:'B', desc:'150g yogurt bianco magro + 150g frutta stagione',  kcal:175, p:6, c:25, g:5  },
@@ -69,72 +86,255 @@ const SPUNTINO_BASE = [
   { id:'D', desc:'25g crackers + 20g grana (o 20g frutta secca)',    kcal:210, p:8, c:15, g:14 },
 ];
 const SPUNTINO_EXTRA = [
-  { id:'A', desc:'3 gallette (grano saraceno)',                                      kcal:105, p:3,  c:22, g:1 },
+  { id:'A', desc:'3 gallette (grano saraceno) + velo di marmellata (10g)',           kcal:131, p:3,  c:29, g:1 },
   { id:'B', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino', kcal:180, p:14, c:30, g:2 },
-  { id:'C', desc:'150g frutta + 20g grana',                                         kcal:150, p:7,  c:18, g:6 },
 ];
 const CONDIMENTO = [
   { id:'A', desc:'Olio EVO 1 cucchiaio (10g)', kcal:90, p:0, c:0, g:10 },
 ];
 
+// ── NUOVI DATI PIANI BULK (da piano Dott.ssa Pasini) ──────────────
+
+const COLAZIONE_BULK = [
+  { id:'A', desc:'Pane integrale 70g + petto tacchino 60g + emmenthal 20g + spremitura arancia 150g',                              kcal:367, p:26, c:46, g:7 },
+  { id:'B', desc:'Pane integrale 70g + albume 180g + frutta secca 10g + spremitura arancia 150g',                                   kcal:374, p:28, c:48, g:6 },
+  { id:'C', desc:'Yogurt greco fage total 0% 180g + fiocchi avena 50g + frutta fresca 100g + frutta secca 10g',                     kcal:407, p:28, c:52, g:8 },
+  { id:'D', desc:'Latte p.sc. zymil 180g + proteine siero 90% 20g + pane integrale 70g + burro arachidi 10g',                      kcal:377, p:31, c:43, g:10 },
+  { id:'E', desc:'Fiocchi avena 50g + albume 180g + frutta fresca 100g (opp. marmellata rid.zucchero 40g) + frutta secca 10g',      kcal:387, p:29, c:47, g:8 },
+];
+
+const PRE_ALL = [
+  { id:'A', desc:'Pane tipo 00 60g + marmellata rid.zucchero 30g  (30-45 min prima)', kcal:213, p:5, c:46, g:1 },
+  { id:'B', desc:'Gallette grano saraceno 30g + banana 150g + yogurt greco 0% s.l. 150g  (90-120 min prima)', kcal:329, p:20, c:61, g:1 },
+  { id:'C', desc:'Pane tipo 00 60g + miele 15g + yogurt greco 0% s.l. 150g  (90-120 min prima)', kcal:300, p:20, c:52, g:1 },
+  { id:'D', desc:'Pane tipo 00 60g + prosciutto cotto s.g. 60g opp. bresaola 50g  (90-120 min prima)', kcal:234, p:16, c:35, g:4 },
+];
+
+const SP_POMERIGGIO_BULK = [
+  { id:'A', desc:'Yogurt greco fage total 0% 150g + frutta fresca 150g', kcal:167, p:16, c:23, g:0 },
+  { id:'B', desc:'Frutta fresca 150g + cioccolato fondente 20g',         kcal:187, p:2,  c:28, g:7 },
+  { id:'C', desc:'Grana 20g + frutta fresca 150g',                       kcal:154, p:8,  c:18, g:6 },
+  { id:'D', desc:'Crackers integrali 25g + grana 20g',                   kcal:172, p:10, c:17, g:8 },
+  { id:'E', desc:'Skyr bianco s.g. 150g + fiocchi avena 20g',            kcal:165, p:20, c:20, g:1 },
+];
+
+const PRE_TENNIS = [
+  { id:'A', desc:'Pane tipo 00 40g + marmellata rid.zucchero 20g', kcal:142, p:3, c:31, g:1 },
+  { id:'B', desc:'Banana 150g + gallette grano saraceno 12g',      kcal:176, p:3, c:44, g:0 },
+  { id:'C', desc:'Pane tipo 00 40g + bresaola 20g opp. prosciutto cotto s.g. 20g', kcal:140, p:9, c:23, g:1 },
+];
+
+// Carb allenamento Op1/2/4/5 pranzo (con verdure 250g incluse)
+const CB_ALL_P = [
+  { id:'A', desc:'Pasta di semola 180g + verdure 250g',    kcal:697, p:27, c:137, g:5 },
+  { id:'B', desc:'Riso basmati 180g + verdure 250g',       kcal:703, p:17, c:153, g:2 },
+  { id:'C', desc:'Couscous 180g + verdure 250g',           kcal:706, p:25, c:140, g:4 },
+  { id:'D', desc:'Farro 180g + verdure 250g',              kcal:670, p:29, c:133, g:6 },
+  { id:'E', desc:'Pane integrale 230g + verdure 250g',     kcal:584, p:24, c:110, g:6 },
+  { id:'F', desc:'Riso arborio 180g + verdure 250g',       kcal:703, p:18, c:154, g:2 },
+  { id:'G', desc:'Riso integrale 160g + verdure 250g',     kcal:620, p:17, c:127, g:5 },
+  { id:'H', desc:'Riso venere 180g + verdure 250g',        kcal:692, p:19, c:142, g:5 },
+  { id:'I', desc:'Spaghetti di soia 190g + verdure 250g',  kcal:738, p:4,  c:173, g:1 },
+];
+// Carb allenamento Op1/2 cena (CB_ALL_P + patate)
+const CB_ALL_C = [
+  ...CB_ALL_P,
+  { id:'J', desc:'Patate al forno/lesse 740g + verdure 250g', kcal:647, p:18, c:137, g:2 },
+];
+// Carb allenamento Op3 pranzo (porzioni ridotte)
+const CB_ALL_P_OP3 = [
+  { id:'A', desc:'Pasta di semola 160g + verdure 250g',    kcal:627, p:25, c:123, g:4 },
+  { id:'B', desc:'Riso basmati 160g + verdure 250g',       kcal:632, p:16, c:137, g:2 },
+  { id:'C', desc:'Farro 160g + verdure 250g',              kcal:603, p:26, c:119, g:5 },
+  { id:'D', desc:'Couscous 160g + verdure 250g',           kcal:635, p:23, c:126, g:4 },
+  { id:'E', desc:'Pane integrale 210g + verdure 250g',     kcal:539, p:23, c:102, g:5 },
+  { id:'F', desc:'Pane di tipo 0 180g + verdure 250g',     kcal:539, p:19, c:110, g:4 },
+];
+
+// Carb riposo Op1/2/4/5 pranzo
+const CB_RIP_P = [
+  { id:'A', desc:'Pasta di semola 160g + verdure 250g',    kcal:627, p:25, c:123, g:4 },
+  { id:'B', desc:'Riso basmati 160g + verdure 250g',       kcal:632, p:16, c:137, g:2 },
+  { id:'C', desc:'Couscous 160g + verdure 250g',           kcal:635, p:23, c:126, g:4 },
+  { id:'D', desc:'Farro 160g + verdure 250g',              kcal:603, p:26, c:119, g:5 },
+  { id:'E', desc:'Pane integrale 210g + verdure 250g',     kcal:539, p:23, c:102, g:5 },
+  { id:'F', desc:'Riso arborio 160g + verdure 250g',       kcal:632, p:16, c:138, g:2 },
+  { id:'G', desc:'Riso integrale 140g + verdure 250g',     kcal:551, p:15, c:112, g:4 },
+  { id:'H', desc:'Riso venere 160g + verdure 250g',        kcal:622, p:17, c:128, g:4 },
+  { id:'I', desc:'Spaghetti di soia 170g + verdure 250g',  kcal:667, p:4,  c:156, g:1 },
+];
+// Carb riposo Op1/2 cena
+const CB_RIP_C = [
+  { id:'A', desc:'Pasta di semola 150g + verdure 250g',    kcal:592, p:23, c:116, g:4 },
+  { id:'B', desc:'Riso basmati 150g + verdure 250g',       kcal:596, p:15, c:129, g:2 },
+  { id:'C', desc:'Couscous 150g + verdure 250g',           kcal:599, p:22, c:119, g:4 },
+  { id:'D', desc:'Farro 150g + verdure 250g',              kcal:569, p:25, c:112, g:5 },
+  { id:'E', desc:'Pane integrale 190g + verdure 250g',     kcal:493, p:21, c:93,  g:5 },
+  { id:'F', desc:'Riso arborio 150g + verdure 250g',       kcal:596, p:15, c:130, g:2 },
+  { id:'G', desc:'Riso integrale 140g + verdure 250g',     kcal:551, p:15, c:112, g:4 },
+  { id:'H', desc:'Riso venere 150g + verdure 250g',        kcal:587, p:16, c:120, g:4 },
+  { id:'I', desc:'Spaghetti di soia 160g + verdure 250g',  kcal:632, p:4,  c:148, g:1 },
+  { id:'J', desc:'Patate al forno/lesse 610g + verdure 250g', kcal:544, p:16, c:114, g:2 },
+];
+// Carb riposo Op3 pranzo
+const CB_RIP_P_OP3 = [
+  { id:'A', desc:'Pasta di semola 140g + verdure 250g',    kcal:556, p:22, c:109, g:4 },
+  { id:'B', desc:'Riso basmati 140g + verdure 250g',       kcal:560, p:14, c:121, g:2 },
+  { id:'C', desc:'Farro 140g + verdure 250g',              kcal:535, p:23, c:105, g:5 },
+  { id:'D', desc:'Couscous 140g + verdure 250g',           kcal:563, p:21, c:111, g:4 },
+  { id:'E', desc:'Pane integrale 180g + verdure 250g',     kcal:471, p:20, c:88,  g:5 },
+  { id:'F', desc:'Pane di tipo 0 160g + verdure 250g',     kcal:486, p:17, c:99,  g:4 },
+];
+// Carb riposo Op3 cena
+const CB_RIP_C_OP3 = [
+  { id:'A', desc:'Pasta di semola 130g + verdure 250g',    kcal:521, p:21, c:102, g:4 },
+  { id:'B', desc:'Riso basmati 130g + verdure 250g',       kcal:525, p:13, c:113, g:2 },
+  { id:'C', desc:'Farro 130g + verdure 250g',              kcal:501, p:22, c:99,  g:4 },
+  { id:'D', desc:'Couscous 130g + verdure 250g',           kcal:527, p:19, c:104, g:3 },
+  { id:'E', desc:'Pane integrale 170g + verdure 250g',     kcal:448, p:19, c:84,  g:4 },
+  { id:'F', desc:'Pane di tipo 0 150g + verdure 250g',     kcal:460, p:17, c:94,  g:4 },
+];
+
+// Proteine Carne (Op1)
+const PROT_CARNE = [
+  { id:'A', desc:'Petto di pollo 150g',              kcal:165, p:35, c:0, g:2 },
+  { id:'B', desc:'Fesa di tacchino 150g',            kcal:161, p:36, c:0, g:1 },
+  { id:'C', desc:'Macinato vitello 180g ⚠ MAX 1×/sett', kcal:284, p:36, c:0, g:15, maxPerWeek:1 },
+  { id:'D', desc:'Bistecca manzo 160g ⚠ MAX 1×/sett',   kcal:296, p:32, c:0, g:18, maxPerWeek:1 },
+  { id:'E', desc:'Bresaola 110g',                    kcal:166, p:36, c:0, g:2 },
+  { id:'F', desc:'Hamburger 190g ⚠ MAX 1×/sett',    kcal:361, p:38, c:0, g:23, maxPerWeek:1 },
+];
+// Proteine Pesce (Op2)
+const PROT_PESCE = [
+  { id:'A', desc:'Merluzzo 200g',                    kcal:164, p:38, c:0, g:1 },
+  { id:'B', desc:'Salmone 180g ⚠ MAX 1×/sett',      kcal:256, p:36, c:0, g:11, maxPerWeek:1 },
+  { id:'C', desc:'Platessa 200g',                    kcal:138, p:30, c:0, g:2 },
+  { id:'D', desc:'Gamberetti 250g',                  kcal:225, p:47, c:0, g:4 },
+  { id:'E', desc:'Orata 160g',                       kcal:136, p:29, c:0, g:2 },
+  { id:'F', desc:'Pesce spada 200g ⚠ MAX 1×/sett',  kcal:218, p:40, c:0, g:6,  maxPerWeek:1 },
+  { id:'G', desc:'Polpo 320g',                       kcal:218, p:48, c:3, g:3 },
+  { id:'H', desc:'Seppia 240g',                      kcal:163, p:38, c:1, g:1 },
+  { id:'I', desc:'Sogliola 200g',                    kcal:146, p:31, c:0, g:2 },
+  { id:'J', desc:'Tonno in olio sgocciolato 104g ⚠ MAX 1×/sett', kcal:239, p:26, c:0, g:15, maxPerWeek:1 },
+];
+// Proteine Legumi (Op3) — tutte le opzioni includono 120g petto pollo
+const PROT_LEGUMI = [
+  { id:'A', desc:'Ceci secchi 30g + petto pollo 120g',         kcal:241, p:34, c:16, g:4 },
+  { id:'C', desc:'Ceci in scatola 150g + petto pollo 120g',    kcal:312, p:39, c:28, g:6 },
+  { id:'D', desc:'Fagioli in scatola 150g + petto pollo 120g', kcal:285, p:39, c:26, g:4 },
+  { id:'E', desc:'Fagioli secchi 30g + petto pollo 120g',      kcal:227, p:34, c:16, g:2 },
+  { id:'F', desc:'Lenticchie secche 30g + petto pollo 120g',   kcal:233, p:35, c:16, g:3 },
+  { id:'G', desc:'Piselli secchi 30g + petto pollo 120g',      kcal:235, p:35, c:17, g:3 },
+];
+
+// Op4 Fiocchi fisso (verdure già incluse nella scelta carbo)
+const FIXED_FIOCCHI = { desc:'Fiocchi di latte protein 250g', kcal:250, p:30, c:8, g:12 };
+// Op5 Uova fisso (verdure già incluse nella scelta carbo)
+const FIXED_UOVA    = { desc:'2 uova (110g) + albume 150g', kcal:221, p:31, c:2, g:12 };
+
 const MEAL_PLANS = {
+
   Standard: {
     colazione: [
-      { id:'A', desc:'Toast — 70g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',             kcal:340, p:23, c:38, g:11 },
-      { id:'B', desc:'70g pane integrale + 150ml albume strapazzato + spremuta arancia',                                  kcal:380, p:36, c:40, g:6  },
-      { id:'C', desc:'150g yogurt greco + 50g farina avena + 100g frutta fresca + 10g frutta secca + spremitura arancia', kcal:450, p:24, c:60, g:11 },
-      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',                 kcal:350, p:28, c:48, g:5  },
+      { id:'A', desc:'Toast — 70g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia', kcal:340, p:23, c:38, g:11 },
+      { id:'B', desc:'70g pane integrale + 150ml albume strapazzato + spremuta arancia',                       kcal:320, p:33, c:38, g:6  },
+      { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + 100g frutta fresca + 10g frutta secca',          kcal:395, p:23, c:47, g:11 },
+      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',      kcal:350, p:28, c:48, g:5  },
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
-      { id:'A', desc:'150g pasta bianca oppure 160g pasta integrale',         kcal:540, p:18, c:105, g:2   },
-      { id:'B', desc:'160g riso basmati / cous cous / farro / orzo',          kcal:448, p:10, c:96,  g:1.5 },
-      { id:'C', desc:'200g pane di grano duro oppure 210g pane integrale',    kcal:650, p:20, c:125, g:5   },
+      { id:'A', desc:'150g pasta bianca oppure 160g pasta integrale',      kcal:540, p:18, c:105, g:2   },
+      { id:'B', desc:'160g riso basmati / cous cous / farro / orzo',       kcal:448, p:10, c:96,  g:1.5 },
+      { id:'C', desc:'200g pane di grano duro oppure 210g pane integrale', kcal:650, p:20, c:125, g:5   },
     ],
     pranzoProt: PROT_BASE,
     spuntinoPomeriggio: SPUNTINO_BASE,
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'140g pasta bianca oppure 150g pasta integrale',                    kcal:504, p:17, c:99,  g:2   },
-      { id:'B', desc:'150g riso basmati / cous cous / farro / orzo',                     kcal:420, p:10, c:90,  g:1.5 },
-      { id:'C', desc:'160g pane di grano duro oppure 170g pane integrale',               kcal:520, p:17, c:100, g:4   },
-      { id:'D', desc:'200g patate al forno/lesse + 100g pasta bianca',                   kcal:490, p:14, c:100, g:2   },
-      { id:'E', desc:'180g patate al forno/lesse + 100g pane',                           kcal:385, p:9,  c:82,  g:2   },
+      { id:'A', desc:'140g pasta bianca oppure 150g pasta integrale',      kcal:504, p:17, c:99,  g:2   },
+      { id:'B', desc:'150g riso basmati / cous cous / farro / orzo',       kcal:420, p:10, c:90,  g:1.5 },
+      { id:'C', desc:'160g pane di grano duro oppure 170g pane integrale', kcal:520, p:17, c:100, g:4   },
+      { id:'D', desc:'200g patate al forno/lesse + 100g pasta bianca',     kcal:490, p:14, c:100, g:2   },
+      { id:'E', desc:'180g patate al forno/lesse + 100g pane',             kcal:385, p:9,  c:82,  g:2   },
     ],
     cenaProt: PROT_CENA,
     condimentoPranzo: CONDIMENTO,
     condimentoCena: CONDIMENTO,
   },
+
   Riposo: {
     colazione: [
-      { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia',             kcal:310, p:21, c:33, g:10 },
-      { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + frutta fresca di stagione + 10g frutta secca + spremitura', kcal:450, p:24, c:60, g:11 },
-      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',                 kcal:350, p:28, c:48, g:5  },
-      { id:'E', desc:'60g pane integrale + 150ml albume strapazzato + spremuta arancia',                                  kcal:280, p:24, c:42, g:1.5 },
+      { id:'A', desc:'Toast — 60g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia', kcal:310, p:21, c:33, g:10 },
+      { id:'C', desc:'150g yogurt greco + 50g fiocchi avena + 100g frutta fresca + 10g frutta secca',          kcal:383, p:22, c:48, g:11 },
+      { id:'D', desc:'Pancake — 50g farina avena + 150ml albume. Topping: 150g frutta + velo marmellata',      kcal:350, p:28, c:48, g:5  },
+      { id:'E', desc:'60g pane integrale + 150ml albume strapazzato + spremuta arancia',                       kcal:300, p:31, c:33, g:6  },
     ],
     spuntinoMattina: SPUNTINO_BASE,
     pranzoCarbo: [
-      { id:'A', desc:'130g pasta bianca',                              kcal:460, p:16, c:93, g:2 },
-      { id:'B', desc:'140g pasta integrale',                           kcal:490, p:18, c:98, g:3 },
-      { id:'C', desc:'140g riso basmati / cous cous / farro / orzo',   kcal:390, p:9,  c:84, g:1 },
-      { id:'D', desc:'190g pane di grano duro',                        kcal:494, p:15, c:96, g:4 },
-      { id:'E', desc:'190g pane integrale',                            kcal:471, p:17, c:86, g:5 },
+      { id:'A', desc:'130g pasta bianca',                            kcal:460, p:16, c:93, g:2 },
+      { id:'B', desc:'140g pasta integrale',                         kcal:490, p:18, c:98, g:3 },
+      { id:'C', desc:'140g riso basmati / cous cous / farro / orzo', kcal:390, p:9,  c:84, g:1 },
+      { id:'D', desc:'190g pane di grano duro',                      kcal:494, p:15, c:96, g:4 },
+      { id:'E', desc:'190g pane integrale',                          kcal:471, p:17, c:86, g:5 },
     ],
     pranzoProt: PROT_BASE,
-    spuntinoPomeriggio: [
-      ...SPUNTINO_BASE,
-      { id:'E', desc:'3 gallette (grano saraceno)',                                        kcal:105, p:3,  c:22, g:1 },
-      { id:'F', desc:'3 gallette grano saraceno + 40g p.cotto senza grasso / tacchino',   kcal:180, p:14, c:30, g:2 },
-    ],
+    spuntinoPomeriggio: SPUNTINO_BASE,
     spuntinoExtra: SPUNTINO_EXTRA,
     cenaCarbo: [
-      { id:'A', desc:'110g pasta bianca oppure 120g pasta integrale',                    kcal:390, p:13, c:77, g:2 },
-      { id:'B', desc:'120g riso basmati / cous cous / farro / orzo',                     kcal:335, p:8,  c:72, g:1 },
-      { id:'C', desc:'150g pane di grano duro oppure 160g pane integrale',               kcal:494, p:16, c:97, g:4 },
-      { id:'D', desc:'480g patate al forno/lesse (peso a crudo)',                         kcal:370, p:10, c:84, g:0 },
-      { id:'E', desc:'310g gnocchi di patate',                                            kcal:372, p:7,  c:82, g:1 },
+      { id:'A', desc:'110g pasta bianca oppure 120g pasta integrale',      kcal:390, p:13, c:77, g:2 },
+      { id:'B', desc:'120g riso basmati / cous cous / farro / orzo',       kcal:335, p:8,  c:72, g:1 },
+      { id:'C', desc:'150g pane di grano duro oppure 160g pane integrale', kcal:494, p:16, c:97, g:4 },
+      { id:'D', desc:'480g patate al forno/lesse (peso a crudo)',           kcal:370, p:10, c:84, g:0 },
+      { id:'E', desc:'310g gnocchi di patate',                              kcal:372, p:7,  c:82, g:1 },
     ],
     cenaProt: PROT_CENA,
+    condimentoPranzo: CONDIMENTO,
+    condimentoCena: CONDIMENTO,
+  },
+
+  BulkAllenamento: {
+    colazione: COLAZIONE_BULK,
+    spuntinoMattina: PRE_ALL,
+    spuntinoTennis: PRE_TENNIS,
+    pranzoOps: [
+      { id:'Op1', label:'🥩 Carne',             carbs: CB_ALL_P,      prots: PROT_CARNE  },
+      { id:'Op2', label:'🐟 Pesce',             carbs: CB_ALL_P,      prots: PROT_PESCE  },
+      { id:'Op3', label:'🌱 Legumi + pollo',    carbs: CB_ALL_P_OP3,  prots: PROT_LEGUMI },
+      { id:'Op4', label:'🧀 Fiocchi di latte',  carbs: CB_ALL_P, fixedProt: FIXED_FIOCCHI },
+      { id:'Op5', label:'🥚 Uova',              carbs: CB_ALL_P, fixedProt: FIXED_UOVA    },
+    ],
+    cenaOps: [
+      { id:'Op1', label:'🥩 Carne',             carbs: CB_ALL_C,      prots: PROT_CARNE  },
+      { id:'Op2', label:'🐟 Pesce',             carbs: CB_ALL_C,      prots: PROT_PESCE  },
+      { id:'Op3', label:'🌱 Legumi + pollo',    carbs: CB_ALL_P_OP3,  prots: PROT_LEGUMI },
+      { id:'Op4', label:'🧀 Fiocchi di latte',  carbs: CB_ALL_C, fixedProt: FIXED_FIOCCHI },
+      { id:'Op5', label:'🥚 Uova',              carbs: CB_ALL_C, fixedProt: FIXED_UOVA    },
+    ],
+    spuntinoPomeriggio: SP_POMERIGGIO_BULK,
+    spuntinoExtra: SPUNTINO_EXTRA,
+    condimentoPranzo: CONDIMENTO,
+    condimentoCena: CONDIMENTO,
+  },
+
+  BulkRiposo: {
+    colazione: COLAZIONE_BULK,
+    spuntinoMattina: SPUNTINO_BASE,
+    pranzoOps: [
+      { id:'Op1', label:'🥩 Carne',             carbs: CB_RIP_P,      prots: PROT_CARNE  },
+      { id:'Op2', label:'🐟 Pesce',             carbs: CB_RIP_P,      prots: PROT_PESCE  },
+      { id:'Op3', label:'🌱 Legumi + pollo',    carbs: CB_RIP_P_OP3,  prots: PROT_LEGUMI },
+      { id:'Op4', label:'🧀 Fiocchi di latte',  carbs: CB_RIP_P, fixedProt: FIXED_FIOCCHI },
+      { id:'Op5', label:'🥚 Uova',              carbs: CB_RIP_P, fixedProt: FIXED_UOVA    },
+    ],
+    cenaOps: [
+      { id:'Op1', label:'🥩 Carne',             carbs: CB_RIP_C,      prots: PROT_CARNE  },
+      { id:'Op2', label:'🐟 Pesce',             carbs: CB_RIP_C,      prots: PROT_PESCE  },
+      { id:'Op3', label:'🌱 Legumi + pollo',    carbs: CB_RIP_C_OP3,  prots: PROT_LEGUMI },
+      { id:'Op4', label:'🧀 Fiocchi di latte',  carbs: CB_RIP_C, fixedProt: FIXED_FIOCCHI },
+      { id:'Op5', label:'🥚 Uova',              carbs: CB_RIP_C, fixedProt: FIXED_UOVA    },
+    ],
+    spuntinoPomeriggio: SP_POMERIGGIO_BULK,
+    spuntinoExtra: SPUNTINO_EXTRA,
     condimentoPranzo: CONDIMENTO,
     condimentoCena: CONDIMENTO,
   },
@@ -155,7 +355,7 @@ const emptyTotali = () => ({ kcal:0, proteine:0, carbo:0, grassi:0 });
 
 const calcTotali = selezioni => {
   let kcal=0, proteine=0, carbo=0, grassi=0;
-  const MEAL_KEYS = ['colazione','spuntinoMattina','pranzoCarbo','pranzoProt','condimentoPranzo','spuntinoPomeriggio','spuntinoExtra','cenaCarbo','cenaProt','condimentoCena'];
+  const MEAL_KEYS = ['colazione','spuntinoMattina','pranzoCarbo','pranzoProt','condimentoPranzo','spuntinoPomeriggio','spuntinoExtra','cenaCarbo','cenaProt','condimentoCena','spuntinoTennis'];
   for (const k of MEAL_KEYS) {
     const s = selezioni?.[k];
     if (s) { kcal+=s.kcal||0; proteine+=s.p||0; carbo+=s.c||0; grassi+=s.g||0; }
@@ -169,7 +369,7 @@ const calcTotali = selezioni => {
 
 const mkDefaultState = () => ({
   piano: 'Standard',
-  selezioni: { colazione:null, spuntinoMattina:null, pranzoCarbo:null, pranzoProt:null, condimentoPranzo:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaCarbo:null, cenaProt:null, condimentoCena:null, pastoLibero:null, extraFuoriPiano:null },
+  selezioni: { colazione:null, spuntinoMattina:null, pranzoOp:null, pranzoCarbo:null, pranzoProt:null, condimentoPranzo:null, spuntinoPomeriggio:null, spuntinoExtra:null, cenaOp:null, cenaCarbo:null, cenaProt:null, condimentoCena:null, spuntinoTennis:null, pastoLibero:null, extraFuoriPiano:null },
   energia: { bmr:1850, attivo:420 },
   integratori: {
     acqua: 0,
@@ -182,6 +382,7 @@ const mkDefaultState = () => ({
   delta: -2270,
   warningProteine: true,
   doppiAllenamento: false,
+  tennisActive: false,
   timestamp: new Date().toISOString(),
 });
 
@@ -369,7 +570,7 @@ function IntegratoriSection({ integratori, onChange }) {
   const hasAny = integratori.creatina || integratori.preWorkout || integratori.intraWorkout ||
     integratori.vitaminaD || integratori.spirulina || integratori.omega3 || integratori.multiPrz || integratori.acqua > 0;
 
-  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0) + (integratori.intraWorkout ? 3 : 0);
 
   const RowToggle = ({ label, sublabel, val, onTog }) => (
     <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:`1px solid ${BORDER}` }}>
@@ -446,8 +647,8 @@ function IntegratoriSection({ integratori, onChange }) {
       {/* INTRA-WORKOUT */}
       <div style={{ padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div>
-          <span style={{ fontSize:13, color:MUTED2 }}>Intra-Workout (Big Shot Intra)</span>
-          {integratori.intraWorkout && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>BCAA 5g · ☕ 100mg · K 331mg · Na 250mg · Mg 167mg</div>}
+          <span style={{ fontSize:13, color:MUTED2 }}>Intra-Workout (4FUEL Recharge)</span>
+          {integratori.intraWorkout && <div style={{ fontSize:10, color:MUTED, marginTop:1 }}>Creatina 3g · Glutammina 1g · Mg 400mg · K 500mg</div>}
         </div>
         <Toggle value={integratori.intraWorkout} onChange={() => toggle('intraWorkout')} />
       </div>
@@ -457,7 +658,7 @@ function IntegratoriSection({ integratori, onChange }) {
 
 function IntegratoriSummaryCard({ integratori }) {
   if (!integratori) return null;
-  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0);
+  const creatinaTotale = (integratori.creatina ? 3 : 0) + (integratori.preWorkout ? 1 : 0) + (integratori.intraWorkout ? 3 : 0);
   const caffeinaTotale = (integratori.preWorkout ? 160 : 0) + (integratori.intraWorkout ? 100 : 0);
   const vitList = [
     integratori.vitaminaD && 'Vit D',
@@ -523,6 +724,242 @@ function IntegratoriSummaryCard({ integratori }) {
 }
 
 // ── SCREEN 1: PIANO ───────────────────────────────────────────────
+function ScenariCombinazioni() {
+  const [openId, setOpenId] = useState(null);
+  const toggle = id => setOpenId(prev => prev === id ? null : id);
+  const scenarios = [
+    {
+      id:1, accent:LIME, label:'Scenario 1', title:'MAX Calorico Assoluto',
+      kcal:2733, p:152, c:356, g:50,
+      pasti:[
+        { label:'Colazione',       value:'Pancake — 60g farina avena + 180ml albume + 150g frutta + velo marmellata' },
+        { label:'Spuntino mattina',value:'4 gallette grano saraceno + 2 fette p.cotto / 4 fette tacchino' },
+        { label:'Pranzo carbo',    value:'180g pasta' },
+        { label:'Pranzo proteine', value:'100g legumi cotti + 100g carne bianca' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+        { label:'Spuntino pom.',   value:'25g crackers + 20g grana' },
+        { label:'Cena carbo',      value:'160g pasta' },
+        { label:'Cena proteine',   value:'100g legumi cotti + 100g carne bianca' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+      ],
+      nota:'Stesso scenario per P≥130g — coincidono',
+    },
+    {
+      id:2, accent:BLUE, label:'Scenario 2', title:'MAX Proteine (Pesce Bianco)',
+      kcal:2553, p:170, c:340, g:50,
+      pasti:[
+        { label:'Colazione',       value:'Pancake — 60g farina avena + 180ml albume + 150g frutta + velo marmellata' },
+        { label:'Spuntino mattina',value:'4 gallette grano saraceno + 2 fette p.cotto / 4 fette tacchino' },
+        { label:'Pranzo carbo',    value:'180g pasta' },
+        { label:'Pranzo proteine', value:'200g pesce bianco' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+        { label:'Spuntino pom.',   value:'25g crackers + 20g grana' },
+        { label:'Cena carbo',      value:'160g pasta' },
+        { label:'Cena proteine',   value:'200g pesce bianco' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+      ],
+      nota:'180 kcal in meno vs MAX calorico, ma +18g proteine',
+    },
+    {
+      id:3, accent:ORANGE, label:'Scenario 3', title:'MIN Calorico',
+      kcal:1983, p:105, c:294, g:47,
+      pasti:[
+        { label:'Colazione',       value:'Toast — 80g pane integrale + 40g p.cotto/tacchino + 10g emmental + spremitura arancia' },
+        { label:'Spuntino mattina',value:'4 gallette grano saraceno + velo marmellata' },
+        { label:'Pranzo carbo',    value:'180g riso basmati / cous cous / farro / orzo' },
+        { label:'Pranzo proteine', value:'100g bresaola / arrosto tacchino / arrosto pollo' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+        { label:'Spuntino pom.',   value:'20g grana + 150g frutta stagione' },
+        { label:'Cena carbo',      value:'220g patate al forno/lesse + 110g pasta integrale' },
+        { label:'Cena proteine',   value:'100g bresaola / arrosto tacchino / arrosto pollo' },
+        { label:'Condimento',      value:'Olio EVO 1 cucchiaio' },
+      ],
+      nota:'Proteine sotto soglia (105g < 130g target)',
+    },
+  ];
+  const DIVIDERS = [2,5,6];
+  const tableRows = [
+    { label:'kcal',     vals:['2733','2553','1983'], colors:[LIME,BLUE,ORANGE], big:true },
+    { label:'Proteine', vals:['152g','170g','105g'], colors:[LIME,BLUE,ORANGE] },
+    { label:'Carbo',    vals:['356g','340g','294g'] },
+    { label:'Grassi',   vals:['50g','50g','47g'] },
+    { label:'Fonte',    vals:['Legumi+carne','Pesce bianco','Bresaola'], small:true },
+  ];
+  return (
+    <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
+      <div style={{ paddingTop:12, paddingBottom:24 }}>
+        {/* Scenario cards */}
+        <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:20 }}>
+          {scenarios.map(sc => {
+            const isOpen = openId === sc.id;
+            return (
+              <div key={sc.id} style={{ background:CARD, border:`1px solid ${isOpen ? 'rgba(255,255,255,0.12)' : BORDER}`, borderRadius:12, overflow:'hidden', transition:'border-color .2s' }}>
+                {/* Card header — sempre visibile, tap per aprire */}
+                <div onClick={() => toggle(sc.id)} style={{ padding:16, cursor:'pointer', WebkitTapHighlightColor:'transparent', userSelect:'none' }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12 }}>
+                    <div>
+                      <div style={{ fontFamily:"'Barlow Condensed'", fontSize:10, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color:sc.accent, marginBottom:3 }}>{sc.label}</div>
+                      <BB style={{ fontSize:17, fontWeight:700, color:sc.accent, lineHeight:1.2 }}>{sc.title}</BB>
+                    </div>
+                    <span style={{ color:MUTED, fontSize:20, lineHeight:1, marginTop:4, display:'inline-block', transform: isOpen ? 'rotate(90deg)' : 'none', transition:'transform .2s' }}>›</span>
+                  </div>
+                  <div style={{ display:'flex', gap:6, alignItems:'baseline', flexWrap:'wrap' }}>
+                    <BB style={{ fontSize:26, fontWeight:900, color:sc.accent }}>{sc.kcal}</BB>
+                    <span style={{ fontSize:11, color:MUTED }}>kcal</span>
+                    <span style={{ fontSize:14, color:MUTED2 }}>·</span>
+                    <BB style={{ fontSize:14, fontWeight:700, color:sc.accent }}>{sc.p}g <span style={{ fontSize:11, fontWeight:500, color:MUTED }}>P</span></BB>
+                    <span style={{ fontSize:14, color:MUTED2 }}>·</span>
+                    <BB style={{ fontSize:14, fontWeight:700 }}>{sc.c}g <span style={{ fontSize:11, fontWeight:500, color:MUTED }}>C</span></BB>
+                    <span style={{ fontSize:14, color:MUTED2 }}>·</span>
+                    <BB style={{ fontSize:14, fontWeight:700 }}>{sc.g}g <span style={{ fontSize:11, fontWeight:500, color:MUTED }}>G</span></BB>
+                  </div>
+                </div>
+                {/* Contenuto espanso */}
+                {isOpen && (
+                  <div style={{ padding:'0 16px 16px', borderTop:`1px solid ${BORDER}` }}>
+                    <div style={{ marginTop:14, display:'flex', flexDirection:'column', gap:7 }}>
+                      {sc.pasti.map((p, i) => (
+                        <div key={i}>
+                          {DIVIDERS.indexOf(i) !== -1 && <div style={{ height:1, background:BORDER, margin:'4px 0' }} />}
+                          <div style={{ display:'grid', gridTemplateColumns:'106px 1fr', gap:8, alignItems:'start' }}>
+                            <span style={{ fontSize:11, fontWeight:500, color:MUTED, lineHeight:1.4 }}>{p.label}</span>
+                            <span style={{ fontSize:13, lineHeight:1.4, color:'#e8e8e8' }}>{p.value}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ marginTop:14, padding:'10px 12px', borderRadius:8, background:'rgba(255,255,255,0.03)', borderLeft:`3px solid ${sc.accent}`, fontSize:12, color:MUTED, lineHeight:1.5 }}>
+                      {sc.nota}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Tabella comparativa */}
+        <BB style={{ display:'block', fontSize:11, fontWeight:700, letterSpacing:'0.1em', textTransform:'uppercase', color:MUTED, marginBottom:10 }}>Confronto scenari</BB>
+        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, overflow:'hidden', marginBottom:20 }}>
+          <table style={{ width:'100%', borderCollapse:'collapse', fontSize:12 }}>
+            <thead>
+              <tr style={{ background:'rgba(255,255,255,0.03)' }}>
+                <th style={{ padding:'9px 10px', textAlign:'left', borderBottom:`1px solid ${BORDER}` }}></th>
+                {[['MAX Cal',LIME],['MAX Prot',BLUE],['MIN Cal',ORANGE]].map(([h,c]) => (
+                  <th key={h} style={{ padding:'9px 10px', textAlign:'center', borderBottom:`1px solid ${BORDER}`, color:c, fontFamily:"'Barlow Condensed'", fontSize:11, fontWeight:700, letterSpacing:'0.05em', textTransform:'uppercase' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {tableRows.map((r, i) => (
+                <tr key={r.label}>
+                  <td style={{ padding:'9px 10px', color:MUTED, fontSize:11, fontWeight:500, textTransform:'uppercase', letterSpacing:'0.05em', borderBottom: i<tableRows.length-1 ? `1px solid ${BORDER}` : 'none' }}>{r.label}</td>
+                  {r.vals.map((v, j) => (
+                    <td key={j} style={{ padding:'9px 10px', textAlign:'center', borderBottom: i<tableRows.length-1 ? `1px solid ${BORDER}` : 'none' }}>
+                      {r.small
+                        ? <span style={{ fontSize:11, color:MUTED }}>{v}</span>
+                        : <BB style={{ fontSize:r.big?16:14, fontWeight:700, color:(r.colors||[])[j]||'#fff' }}>{v}</BB>
+                      }
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{ fontSize:11, color:MUTED, lineHeight:1.6 }}>
+          <div>Piano Bulk Allenamento · Dott.ssa Ilaria Pasini · Giugno 2025</div>
+          <div style={{ marginTop:2 }}>Valori inclusi olio EVO a pranzo e cena. Spuntino tennis e pasto libero esclusi.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BulkMealSelector({ title, opsKey, carbKey, protKey, opKey, plan, selezioni, onSelectOp, onSelectItem }) {
+  const ops = plan[opsKey] || [];
+  const selectedOpId = selezioni[opKey];
+  const selectedOp   = ops.find(o => o.id === selectedOpId);
+
+  const carbSel = selezioni[carbKey];
+  const protSel = selezioni[protKey];
+
+  const totalKcal = (() => {
+    if (!selectedOp) return null;
+    if (selectedOp.fixedProt) return (carbSel?.kcal||0) + (selectedOp.fixedProt.kcal||0);
+    if (carbSel && protSel) return (carbSel.kcal||0) + (protSel.kcal||0);
+    return null;
+  })();
+
+  const renderRow = (opt, activeKey, selKey) => {
+    const active = selezioni[activeKey]?.opzione === opt.id;
+    return (
+      <div key={opt.id} onClick={() => onSelectItem(selKey, opt)}
+        style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'7px 10px', borderRadius:8, marginBottom:3, background: active ? 'rgba(200,245,58,0.08)' : CARD2, border:`1px solid ${active ? 'rgba(200,245,58,0.3)' : BORDER}`, cursor:'pointer', transition:'all .15s' }}>
+        <div style={{ flex:1, fontSize:11, color: active ? '#fff' : MUTED2, lineHeight:1.35, paddingRight:8 }}>{opt.desc}</div>
+        <BB style={{ flexShrink:0, fontSize:11, fontWeight:700, color: active ? LIME : MUTED }}>{opt.kcal} <span style={{ fontSize:9, fontWeight:400 }}>kcal</span></BB>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:8, overflow:'hidden' }}>
+      {/* Header */}
+      <div style={{ padding:'11px 14px 8px', display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+        <BB style={{ fontSize:14, fontWeight:800, color:'#fff' }}>{title}</BB>
+        {totalKcal !== null && (
+          <BB style={{ fontSize:11, fontWeight:700, color:LIME }}>{totalKcal} kcal</BB>
+        )}
+      </div>
+
+      {/* Selezione tipo pasto */}
+      <div style={{ padding:'0 14px 10px' }}>
+        <div style={{ fontSize:10, color:MUTED, marginBottom:6, fontWeight:600, letterSpacing:'0.05em', textTransform:'uppercase' }}>Tipo pasto</div>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:5 }}>
+          {ops.map(op => {
+            const active = selectedOpId === op.id;
+            return (
+              <button key={op.id} onClick={() => onSelectOp(op.id)}
+                style={{ background: active ? 'rgba(200,245,58,0.12)' : CARD2, border:`1px solid ${active ? LIME : BORDER}`, borderRadius:99, padding:'5px 10px', cursor:'pointer', fontSize:11, fontWeight:600, color: active ? LIME : MUTED2, transition:'all .15s' }}>
+                {op.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Carbo + Proteine affiancati (visibili subito dopo scelta op) */}
+      {selectedOp && selectedOp.carbs && (
+        <div style={{ display:'flex', gap:0, borderTop:`1px solid ${BORDER}` }}>
+          {/* Colonna carboidrati */}
+          <div style={{ flex:1, padding:'10px 10px 10px 14px', borderRight:`1px solid ${BORDER}` }}>
+            <div style={{ fontSize:10, color:MUTED, marginBottom:6, fontWeight:600, letterSpacing:'0.04em', textTransform:'uppercase' }}>Carbo + verdure</div>
+            {selectedOp.carbs.map(opt => renderRow(opt, carbKey, carbKey))}
+          </div>
+          {/* Colonna proteine: selezionabile (prots) o fissa (fixedProt) */}
+          <div style={{ flex:1, padding:'10px 14px 10px 10px' }}>
+            {selectedOp.fixedProt ? (
+              <>
+                <div style={{ fontSize:10, color:MUTED, marginBottom:6, fontWeight:600, letterSpacing:'0.04em', textTransform:'uppercase' }}>Fonte proteica</div>
+                <div style={{ padding:'8px 10px', borderRadius:8, background:'rgba(200,245,58,0.06)', border:`1px solid rgba(200,245,58,0.2)`, fontSize:11, color:'#fff', lineHeight:1.35 }}>
+                  <div style={{ marginBottom:4 }}>{selectedOp.fixedProt.desc}</div>
+                  <BB style={{ fontSize:11, fontWeight:700, color:LIME }}>{selectedOp.fixedProt.kcal} kcal</BB>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize:10, color:MUTED, marginBottom:6, fontWeight:600, letterSpacing:'0.04em', textTransform:'uppercase' }}>Fonte proteica</div>
+                {(selectedOp.prots || []).map(opt => renderRow(opt, protKey, protKey))}
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ScreenPiano({ state, setState, days7 }) {
   const [aiLoading,       setAiLoading]       = useState(false);
   const [plTesto,         setPlTesto]         = useState(state.selezioni.pastoLibero?.desc || '');
@@ -538,6 +975,7 @@ function ScreenPiano({ state, setState, days7 }) {
   const [extraManualP,    setExtraManualP]    = useState('');
   const [extraManualC,    setExtraManualC]    = useState('');
   const [extraManualG,    setExtraManualG]    = useState('');
+  const [pianoTab, setPianoTab] = useState(0);
   const plan = MEAL_PLANS[state.piano] || MEAL_PLANS.Standard;
 
   // Count how many other days this week already used pasto libero
@@ -552,11 +990,22 @@ function ScreenPiano({ state, setState, days7 }) {
       const isToggleOff = prev.selezioni[sectionKey]?.opzione === optId;
       const newSel      = isToggleOff ? null : { opzione: optId, kcal: opt.kcal, p: opt.p, c: opt.c, g: opt.g };
       let newSelezioni  = { ...prev.selezioni, [sectionKey]: newSel };
-      // Auto-clear condimentoCena if cenaProt changes away from E/F/G
       if (sectionKey === 'cenaProt') {
         const newId = isToggleOff ? null : optId;
         if (!['E','F','G'].includes(newId)) newSelezioni.condimentoCena = null;
       }
+      const next = rebuildState({ ...prev, selezioni: newSelezioni });
+      persistState(next);
+      return next;
+    });
+  };
+
+  // Per i piani Bulk: l'opzione è già nota (passata direttamente dal BulkMealSelector)
+  const onSelectDirect = (sectionKey, opt) => {
+    setState(prev => {
+      const isToggleOff = prev.selezioni[sectionKey]?.opzione === opt.id;
+      const newSel = isToggleOff ? null : { opzione: opt.id, kcal: opt.kcal, p: opt.p, c: opt.c, g: opt.g };
+      const newSelezioni = { ...prev.selezioni, [sectionKey]: newSel };
       const next = rebuildState({ ...prev, selezioni: newSelezioni });
       persistState(next);
       return next;
@@ -623,11 +1072,43 @@ function ScreenPiano({ state, setState, days7 }) {
     return next;
   });
 
+  const setTennis = () => setState(prev => {
+    const next = rebuildState({ ...prev, tennisActive: !prev.tennisActive,
+      selezioni: { ...prev.selezioni, spuntinoTennis: null } });
+    persistState(next);
+    return next;
+  });
+
+  const tennisOn = !!state.tennisActive;
+  const isBulk = ['BulkAllenamento','BulkRiposo'].includes(state.piano);
+
+  const onSelectBulkOp = (pranzoOrcena, opId) => {
+    const opKey   = pranzoOrcena === 'pranzo' ? 'pranzoOp'   : 'cenaOp';
+    const carbKey = pranzoOrcena === 'pranzo' ? 'pranzoCarbo' : 'cenaCarbo';
+    const protKey = pranzoOrcena === 'pranzo' ? 'pranzoProt'  : 'cenaProt';
+    setState(prev => {
+      const isToggle = prev.selezioni[opKey] === opId;
+      const newOp = isToggle ? null : opId;
+      const opsArr = (MEAL_PLANS[prev.piano] || {})[pranzoOrcena === 'pranzo' ? 'pranzoOps' : 'cenaOps'] || [];
+      const selectedOp = opsArr.find(o => o.id === newOp);
+      let newProt = null;
+      if (selectedOp?.fixedProt) {
+        const fp = selectedOp.fixedProt;
+        newProt = { opzione:'FIXED', kcal: fp.kcal, p: fp.p, c: fp.c, g: fp.g };
+      }
+      const newSelezioni = { ...prev.selezioni, [opKey]: newOp, [carbKey]: null, [protKey]: newProt };
+      const next = rebuildState({ ...prev, selezioni: newSelezioni });
+      persistState(next);
+      return next;
+    });
+  };
+
   const { kcal, proteine, carbo, grassi } = state.totali;
   const plans = [
-    { id:'Bulk',     label:'Piano 1', sub:'Bulk',     locked:true  },
-    { id:'Standard', label:'Piano 2', sub:'Standard', locked:false },
-    { id:'Riposo',   label:'Piano 3', sub:'Riposo',   locked:false },
+    { id:'BulkAllenamento', label:'Bulk',     sub:'Allenamento' },
+    { id:'BulkRiposo',      label:'Bulk',     sub:'Riposo'      },
+    { id:'Standard',        label:'Standard', sub:'Allenamento' },
+    { id:'Riposo',          label:'Standard', sub:'Riposo'      },
   ];
 
   return (
@@ -642,46 +1123,84 @@ function ScreenPiano({ state, setState, days7 }) {
             {fmtDate(new Date())}
           </div>
         </div>
-        {/* Plan selector */}
-        <div style={{ display:'flex', gap:7 }}>
-          {plans.map(pl => {
-            const act = state.piano === pl.id;
-            return (
-              <button key={pl.id} onClick={() => !pl.locked && setPiano(pl.id)}
-                style={{ flex:1, border:`1px solid ${act ? LIME : BORDER}`, background: act ? 'rgba(200,245,58,0.1)' : CARD, borderRadius:99, padding:'7px 4px', cursor: pl.locked ? 'not-allowed' : 'pointer', opacity: pl.locked ? 0.4 : 1, transition:'all .2s', textAlign:'center' }}>
-                <div style={{ fontSize:10, color: act ? LIME : MUTED, fontWeight:500, lineHeight:1.2 }}>{pl.label}</div>
-                <BB style={{ fontSize:12, fontWeight:700, color: act ? LIME : MUTED2 }}>{pl.sub}{pl.locked ? ' 🔒' : ''}</BB>
-              </button>
-            );
-          })}
+        {/* Piano / Combinazioni toggle */}
+        <div style={{ display:'flex', gap:6, marginBottom: pianoTab===0 ? 10 : 0 }}>
+          {[{id:0,label:'Piano'},{id:1,label:'Combinazioni'}].map(t => (
+            <button key={t.id} onClick={() => setPianoTab(t.id)}
+              style={{ flex:1, background: pianoTab===t.id ? 'rgba(200,245,58,0.1)' : CARD, border:`1px solid ${pianoTab===t.id ? LIME : BORDER}`, borderRadius:99, padding:'7px 4px', cursor:'pointer', fontFamily:"'Barlow Condensed'", fontSize:13, fontWeight:700, color: pianoTab===t.id ? LIME : MUTED2, transition:'all .2s' }}>
+              {t.label}
+            </button>
+          ))}
         </div>
+        {/* Plan selector */}
+        {pianoTab===0 && (
+          <div style={{ display:'flex', gap:7 }}>
+            {plans.map(pl => {
+              const act = state.piano === pl.id;
+              return (
+                <button key={pl.id} onClick={() => setPiano(pl.id)}
+                  style={{ flex:1, border:`1px solid ${act ? LIME : BORDER}`, background: act ? 'rgba(200,245,58,0.1)' : CARD, borderRadius:99, padding:'7px 4px', cursor:'pointer', transition:'all .2s', textAlign:'center' }}>
+                  <div style={{ fontSize:10, color: act ? LIME : MUTED, fontWeight:500, lineHeight:1.2 }}>{pl.label}</div>
+                  <BB style={{ fontSize:12, fontWeight:700, color: act ? LIME : MUTED2 }}>{pl.sub}</BB>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
+      {pianoTab===1 && <ScenariCombinazioni />}
       {/* Meals */}
-      <div className="scroll-area" style={{ flex:1, padding:'0 16px' }}>
-        <MealSection title="Colazione"         selKey="colazione"         options={plan.colazione}         selezioni={state.selezioni} onSelect={onSelect} />
-        <MealSection title="Spuntino mattina"  selKey="spuntinoMattina"   options={plan.spuntinoMattina}   selezioni={state.selezioni} onSelect={onSelect} />
-        <MealSectionDouble title="Pranzo" subsections={[
-          { label:'Carboidrati', selKey:'pranzoCarbo',  options:plan.pranzoCarbo  },
-          { label:'Proteine',    selKey:'pranzoProt',   options:plan.pranzoProt   },
-        ]} selezioni={state.selezioni} onSelect={onSelect} />
+      <div className="scroll-area" style={{ flex:1, padding:'0 16px', display: pianoTab===0 ? undefined : 'none' }}>
+        <MealSection title="Colazione" selKey="colazione" options={plan.colazione} selezioni={state.selezioni} onSelect={onSelect} />
+        <MealSection title="Spuntino mattina" selKey="spuntinoMattina" options={plan.spuntinoMattina} selezioni={state.selezioni} onSelect={onSelect} />
+
+        {/* Tennis toggle (solo Bulk Allenamento) */}
+        {state.piano === 'BulkAllenamento' && (
+          <>
+            <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:8, padding:'11px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <span style={{ fontSize:13, color:MUTED2 }}>🎾 Allenamento tennis</span>
+              <Toggle value={tennisOn} onChange={setTennis} />
+            </div>
+            {tennisOn && (
+              <MealSection title="Spuntino pre-tennis" selKey="spuntinoTennis" options={plan.spuntinoTennis} selezioni={state.selezioni} onSelect={onSelect} />
+            )}
+          </>
+        )}
+
+        {/* Doppio allenamento (Standard/Riposo only) */}
+        {!isBulk && (
+          <>
+            <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:8, padding:'11px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+              <span style={{ fontSize:13, color:MUTED2 }}>Lunedì — doppio allenamento</span>
+              <Toggle value={state.doppiAllenamento} onChange={setDoppi} />
+            </div>
+            {state.doppiAllenamento && (
+              <MealSection title="Spuntino extra" selKey="spuntinoExtra" options={plan.spuntinoExtra} selezioni={state.selezioni} onSelect={onSelect} />
+            )}
+          </>
+        )}
+
+        {/* PRANZO */}
+        {isBulk
+          ? <BulkMealSelector title="Pranzo" opsKey="pranzoOps" carbKey="pranzoCarbo" protKey="pranzoProt" opKey="pranzoOp" plan={plan} selezioni={state.selezioni} onSelectOp={onSelectBulkOp.bind(null,'pranzo')} onSelectItem={onSelectDirect} />
+          : <MealSectionDouble title="Pranzo" subsections={[
+              { label:'Carboidrati', selKey:'pranzoCarbo', options:plan.pranzoCarbo },
+              { label:'Proteine',    selKey:'pranzoProt',  options:plan.pranzoProt  },
+            ]} selezioni={state.selezioni} onSelect={onSelect} />
+        }
         <MealSection title="Condimento pranzo" selKey="condimentoPranzo" options={plan.condimentoPranzo} selezioni={state.selezioni} onSelect={onSelect} />
         <MealSection title="Spuntino pomeriggio" selKey="spuntinoPomeriggio" options={plan.spuntinoPomeriggio} selezioni={state.selezioni} onSelect={onSelect} />
 
-        {/* Monday double training toggle */}
-        <div style={{ background:CARD, border:`1px solid ${BORDER}`, borderRadius:12, marginBottom:8, padding:'11px 14px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-          <span style={{ fontSize:13, color:MUTED2 }}>Lunedì — doppio allenamento</span>
-          <Toggle value={state.doppiAllenamento} onChange={setDoppi} />
-        </div>
-        {state.doppiAllenamento && (
-          <MealSection title="Spuntino extra" selKey="spuntinoExtra" options={plan.spuntinoExtra} selezioni={state.selezioni} onSelect={onSelect} />
-        )}
-
-        <MealSectionDouble title="Cena" subsections={[
-          { label:'Carboidrati', selKey:'cenaCarbo', options:plan.cenaCarbo },
-          { label:'Proteine',    selKey:'cenaProt',  options:plan.cenaProt  },
-        ]} selezioni={state.selezioni} onSelect={onSelect} />
-        {['E','F','G'].includes(state.selezioni.cenaProt?.opzione) && (
+        {/* CENA */}
+        {isBulk
+          ? <BulkMealSelector title="Cena" opsKey="cenaOps" carbKey="cenaCarbo" protKey="cenaProt" opKey="cenaOp" plan={plan} selezioni={state.selezioni} onSelectOp={onSelectBulkOp.bind(null,'cena')} onSelectItem={onSelectDirect} />
+          : <MealSectionDouble title="Cena" subsections={[
+              { label:'Carboidrati', selKey:'cenaCarbo', options:plan.cenaCarbo },
+              { label:'Proteine',    selKey:'cenaProt',  options:plan.cenaProt  },
+            ]} selezioni={state.selezioni} onSelect={onSelect} />
+        }
+        {!isBulk && ['E','F','G'].includes(state.selezioni.cenaProt?.opzione) && (
           <MealSection title="Condimento cena" selKey="condimentoCena" options={plan.condimentoCena} selezioni={state.selezioni} onSelect={onSelect} />
         )}
 
@@ -788,7 +1307,7 @@ function ScreenPiano({ state, setState, days7 }) {
       </div>
 
       {/* Sticky footer */}
-      <div style={{ background:'rgba(10,10,11,0.96)', borderTop:`1px solid ${BORDER}`, padding:'10px 20px 6px', flexShrink:0, backdropFilter:'blur(12px)' }}>
+      <div style={{ background:'rgba(10,10,11,0.96)', borderTop:`1px solid ${BORDER}`, padding:'10px 20px 6px', flexShrink:0, backdropFilter:'blur(12px)', display: pianoTab===0 ? undefined : 'none' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
           <div>
             <div style={{ fontSize:11, color:MUTED, marginBottom:2 }}>Totale giornaliero</div>
@@ -1250,7 +1769,7 @@ function ScreenFrequenza({ state, days7 }) {
   const consumate = bmr + attivo;
   const now     = new Date();
   const intr = state.integratori || mkDefaultState().integratori;
-  const creatinaTotaleExport = (intr.creatina ? 3 : 0) + (intr.preWorkout ? 1 : 0);
+  const creatinaTotaleExport = (intr.creatina ? 3 : 0) + (intr.preWorkout ? 1 : 0) + (intr.intraWorkout ? 3 : 0);
   const caffeinaTotaleExport = (intr.preWorkout ? 160 : 0) + (intr.intraWorkout ? 100 : 0);
   const notionText = [
     'SALVA_NUTRIZIONE',
@@ -1273,7 +1792,7 @@ function ScreenFrequenza({ state, days7 }) {
     `creatina_totale_g: ${creatinaTotaleExport}`,
     `vitamine: vitamina_d=${intr.vitaminaD}, spirulina=${intr.spirulina}, omega3=${intr.omega3}, multi_prz=${intr.multiPrz}`,
     `pre_workout: assunto=${intr.preWorkout}, caffeina_mg=160, beta_alanina_mg=1600, creatina_g=1, arginina_mg=1000`,
-    `intra_workout: assunto=${intr.intraWorkout}, bcaa_g=5, caffeina_mg=100, potassio_mg=331, sodio_mg=250, magnesio_mg=167`,
+    `intra_workout: assunto=${intr.intraWorkout}, creatina_g=3, glutammina_g=1, magnesio_mg=400, potassio_mg=500`,
     `caffeina_totale_mg: ${caffeinaTotaleExport}`,
   ].join('\n');
 
